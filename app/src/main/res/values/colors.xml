@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <!-- Cores do Material Design
+    https://developer.android.com/training/material/theme.html
+    http://www.google.com/design/spec/style/color.html
+    https://gist.github.com/daniellevass/b0b8cfa773488e138037 -->
+    <color name="md_blue_300">#64B5F6</color>
+    <color name="md_blue_600">#1E88E5</color>
+
+    <color name="colorPrimary">@color/md_blue_300</color>
+    <color name="colorPrimaryDark">@color/md_blue_600</color>
+    <color name="colorAccent">#F44336</color>
 </resources>

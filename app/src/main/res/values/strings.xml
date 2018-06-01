@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Portugol Online</string>
+    <string name="hello_world">Olá, mundo!</string>
 </resources>
