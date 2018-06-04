@@ -3,6 +3,7 @@ package br.com.vinyanalista.portugol.android;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.os.Bundle;
+import android.webkit.WebView;
 
 public class AtividadePrincipal extends AppCompatActivity {
 
@@ -13,5 +14,9 @@ public class AtividadePrincipal extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        WebView webView = (WebView) findViewById(R.id.editor);
+
+        Editor editor = new Editor(webView);
     }
 }
