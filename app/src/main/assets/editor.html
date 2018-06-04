@@ -1,1 +1,15 @@
-<html><body><h1>Olá, mundo!</h1></body></html>
+<html>
+<head>
+    <link rel="stylesheet" href="codemirror.css">
+</head>
+<body>
+<script src="codemirror.js"></script>
+<script src="javascript.js"></script>
+<script>
+    var myCodeMirror = CodeMirror(document.body, {
+        value: "function myScript(){return 100;}\n",
+        mode: "javascript"
+    });
+</script>
+</body>
+</html>
