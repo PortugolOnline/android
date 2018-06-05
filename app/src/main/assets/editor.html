@@ -14,16 +14,16 @@
 </head>
 <body>
 
-<div id="editor">function foo(items) {
-    var x = "All this is syntax highlighted";
-    return x;
-}</div>
+<div id="editor">program Hello;
+begin
+    writeln ('Hello, world.');
+end.</div>
 
 <script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
 <script>
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/textmate");
-    editor.session.setMode("ace/mode/javascript");
+    editor.session.setMode("ace/mode/pascal");
 </script>
 </body>
 </html>
