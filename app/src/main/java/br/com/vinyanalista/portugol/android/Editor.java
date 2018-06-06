@@ -42,8 +42,16 @@ public class Editor {
         }
     }
 
+    public void aumentarFonte() {
+        webView.evaluateJavascript("aumentarFonte()", null);
+    }
+
     public void desfazer() {
         webView.evaluateJavascript("desfazer()", null);
+    }
+
+    public void diminuirFonte() {
+        webView.evaluateJavascript("diminuirFonte()", null);
     }
 
     public String getCodigoFonte() {

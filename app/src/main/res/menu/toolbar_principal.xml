@@ -12,6 +12,16 @@
         android:title="@string/action_refazer"
         app:showAsAction="always" />
     <item
+        android:id="@+id/action_aumentar_fonte"
+        android:icon="@drawable/ic_zoom_in_white_48dp"
+        android:title="@string/action_aumentar_fonte"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_diminuir_fonte"
+        android:icon="@drawable/ic_zoom_out_white_48dp"
+        android:title="@string/action_diminuir_fonte"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/action_executar"
         android:icon="@drawable/ic_play_arrow_white_48dp"
         android:title="@string/action_executar"

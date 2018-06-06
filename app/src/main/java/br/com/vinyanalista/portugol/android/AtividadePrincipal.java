@@ -35,8 +35,14 @@ public class AtividadePrincipal extends AppCompatActivity implements EditorListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_aumentar_fonte:
+               aumentarFonte();
+                return true;
             case R.id.action_desfazer:
                 desfazer();
+                return true;
+            case R.id.action_diminuir_fonte:
+                diminuirFonte();
                 return true;
             case R.id.action_executar:
                 executar();
@@ -55,8 +61,16 @@ public class AtividadePrincipal extends AppCompatActivity implements EditorListe
         menuToolbarPrincipal.findItem(R.id.action_refazer).setEnabled(editor.isRefazerPossivel());
     }
 
+    public void aumentarFonte() {
+        editor.aumentarFonte();
+    }
+
     protected void desfazer() {
         editor.desfazer();
+    }
+
+    protected void diminuirFonte() {
+        editor.diminuirFonte();
     }
 
     protected void executar() {

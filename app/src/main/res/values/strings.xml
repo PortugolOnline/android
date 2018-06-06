@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Portugol Online</string>
+    <string name="action_aumentar_fonte">Aumentar fonte</string>
     <string name="action_desfazer">Desfazer</string>
+    <string name="action_diminuir_fonte">Diminuir fonte</string>
     <string name="action_executar">Executar</string>
     <string name="action_refazer">Refazer</string>
 </resources>
