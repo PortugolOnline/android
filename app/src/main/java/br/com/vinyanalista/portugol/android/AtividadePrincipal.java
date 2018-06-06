@@ -3,6 +3,7 @@ package br.com.vinyanalista.portugol.android;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
@@ -56,6 +57,12 @@ public class AtividadePrincipal extends AppCompatActivity implements EditorListe
     }
 
     @Override
+    public void aoAtualizarCodigoFonte(Editor editor) {
+        // TODO Apenas teste, remover
+        Log.d("teste", editor.getCodigoFonte() + "\n\n");
+    }
+
+    @Override
     public void aoAtualizarDesfazerRefazer(Editor editor) {
         menuToolbarPrincipal.findItem(R.id.action_desfazer).setEnabled(editor.isDesfazerPossivel());
         menuToolbarPrincipal.findItem(R.id.action_refazer).setEnabled(editor.isRefazerPossivel());
@@ -75,8 +82,7 @@ public class AtividadePrincipal extends AppCompatActivity implements EditorListe
 
     protected void executar() {
         // TODO Apenas teste, remover
-        editor.setCodigoFonte("algoritmo\nescreva \"Olá, Android!\"\nfim_algoritmo.");
-        editor.limparHistoricoDesfazerRefazer();
+        Log.d("teste", editor.getCodigoFonte() + "\n\n");
     }
 
     protected void refazer() {

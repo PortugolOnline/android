@@ -1,5 +1,6 @@
 package br.com.vinyanalista.portugol.android;
 
+import android.util.Log;
 import android.webkit.*;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ public class Editor {
     protected final static String ARQUIVO_HTML = "file:///android_asset/editor.html";
     protected final static String CODIFICACAO = "UTF-8";
 
+    private String codigoFonte;
     private boolean desfazerPossivel;
     protected final List<EditorListener> listeners = new ArrayList<EditorListener>();
     private boolean refazerPossivel;
@@ -17,6 +19,10 @@ public class Editor {
 
     public Editor(WebView webView) {
         assert (webView != null);
+
+        codigoFonte = "";
+        desfazerPossivel = false;
+        refazerPossivel = false;
         this.webView = webView;
 
         WebSettings webSettings = webView.getSettings();
@@ -31,6 +37,14 @@ public class Editor {
 
     public void adicionarListener(EditorListener listener) {
         listeners.add(listener);
+    }
+
+    @JavascriptInterface
+    public void atualizarCodigoFonte(String codigoFonte) {
+        this.codigoFonte = codigoFonte;
+        for (EditorListener listener : listeners) {
+            listener.aoAtualizarCodigoFonte(this);
+        }
     }
 
     @JavascriptInterface
@@ -50,12 +64,16 @@ public class Editor {
         webView.evaluateJavascript("desfazer()", null);
     }
 
+    public void destacarLinhaComErro(int linha, int coluna) {
+        webView.evaluateJavascript("destacarLinhaComErro(" + linha + ", " + coluna + ")", null);
+    }
+
     public void diminuirFonte() {
         webView.evaluateJavascript("diminuirFonte()", null);
     }
 
     public String getCodigoFonte() {
-        return null;
+        return codigoFonte;
     }
 
     public boolean isDesfazerPossivel() {
@@ -70,6 +88,10 @@ public class Editor {
         webView.evaluateJavascript("limparHistoricoDesfazerRefazer()", null);
     }
 
+    public void posicionarCursor(int linha, int coluna) {
+        webView.evaluateJavascript("posicionarCursor(" + linha + ", " + coluna + ")", null);
+    }
+
     public void refazer() {
         webView.evaluateJavascript("refazer()", null);
     }
@@ -80,7 +102,11 @@ public class Editor {
 
     public void setCodigoFonte(String codigoFonte) {
         assert (codigoFonte != null);
+        this.codigoFonte = codigoFonte;
         codigoFonte = codigoFonte.replace("\n", "\\n");
         webView.evaluateJavascript("setCodigoFonte('" + codigoFonte + "')", null);
+        for (EditorListener listener : listeners) {
+            listener.aoAtualizarCodigoFonte(this);
+        }
     }
 }

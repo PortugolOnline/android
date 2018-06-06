@@ -5,3 +5,7 @@
     bottom: 0;
     left: 0;
 }
+
+.linha_com_erro {
+    background: #FFC8C8 !important;
+}
