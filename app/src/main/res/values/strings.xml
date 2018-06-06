@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Portugol Online</string>
-    <string name="hello_world">Olá, mundo!</string>
+    <string name="action_executar">Executar</string>
 </resources>

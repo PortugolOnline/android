@@ -1,28 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
     <title>ACE in Action</title>
-    <style type="text/css" media="screen">
-    #editor {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-    }
+    <link rel="stylesheet" type="text/css" href="editor.css" media="screen">
 </style>
 </head>
 <body>
-
 <div id="editor">algoritmo
 escreva "Olá, mundo!"
 fim_algoritmo.</div>
 
-<script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
-<script>
-    var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/textmate");
-    editor.session.setMode("ace/mode/portugol");
-</script>
+<script src="ace/ace.js"></script>
+<script src="editor.js"></script>
 </body>
 </html>
