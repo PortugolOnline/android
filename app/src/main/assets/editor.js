@@ -28,11 +28,6 @@ function removerDestaqueLinhaComErro() {
     editor.selection.removeListener('changeCursor', removerDestaqueLinhaComErro);
 }
 
-// https://stackoverflow.com/a/39914235/1657502
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 /* Funções para uso externo */
 
 function aumentarFonte() {
@@ -45,11 +40,15 @@ function desfazer() {
     atualizarDesfazerRefazer();
 }
 
-async function destacarLinhaComErro(linha, coluna) {
+var intervaloDestacarLinhaComErro;
+
+function destacarLinhaComErro(linha, coluna) {
     posicionarCursor(linha, coluna);
-    await sleep(10);
-    document.getElementsByClassName('ace_active-line')[0].classList.add('linha_com_erro');
-    editor.selection.on('changeCursor', removerDestaqueLinhaComErro);
+    intervaloDestacarLinhaComErro = setInterval(function() {
+        document.getElementsByClassName('ace_active-line')[0].classList.add('linha_com_erro');
+        editor.selection.on('changeCursor', removerDestaqueLinhaComErro);
+        clearInterval(intervaloDestacarLinhaComErro);
+    }, 50);
 }
 
 function diminuirFonte() {
