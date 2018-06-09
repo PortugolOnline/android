@@ -1,14 +1,13 @@
 package br.com.vinyanalista.portugol.android;
 
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 
-public class AtividadePrincipal extends AppCompatActivity implements EditorListener {
+public class AtividadePrincipal extends AtividadeBase implements EditorListener {
     protected Editor editor;
     protected Menu menuToolbarPrincipal;
 
@@ -17,8 +16,7 @@ public class AtividadePrincipal extends AppCompatActivity implements EditorListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.atividade_principal);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        configurarToolbar();
 
         WebView webView = (WebView) findViewById(R.id.editor);
 
@@ -37,7 +35,7 @@ public class AtividadePrincipal extends AppCompatActivity implements EditorListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_aumentar_fonte:
-               aumentarFonte();
+                aumentarFonte();
                 return true;
             case R.id.action_desfazer:
                 desfazer();
@@ -81,8 +79,7 @@ public class AtividadePrincipal extends AppCompatActivity implements EditorListe
     }
 
     protected void executar() {
-        // TODO Apenas teste, remover
-        Log.d("teste", editor.getCodigoFonte() + "\n\n");
+        startActivity(new Intent(getBaseContext(), AtividadeConsole.class));
     }
 
     protected void refazer() {

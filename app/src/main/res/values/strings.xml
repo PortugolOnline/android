@@ -5,4 +5,5 @@
     <string name="action_diminuir_fonte">Diminuir fonte</string>
     <string name="action_executar">Executar</string>
     <string name="action_refazer">Refazer</string>
+    <string name="atividade_console">Console</string>
 </resources>

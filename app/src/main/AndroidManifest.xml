@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/TemaDoAplicativo">
-        <activity android:name=".AtividadePrincipal"
+        <activity
+            android:name=".AtividadePrincipal"
             android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -17,6 +18,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".AtividadeConsole"
+            android:label="@string/atividade_console"
+            android:parentActivityName=".AtividadePrincipal" />
     </application>
 
 </manifest>
