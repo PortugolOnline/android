@@ -2,7 +2,6 @@ package br.com.vinyanalista.portugol.android;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
