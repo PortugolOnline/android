@@ -12,18 +12,23 @@
         android:title="@string/action_refazer"
         app:showAsAction="always" />
     <item
-        android:id="@+id/action_aumentar_fonte"
-        android:icon="@drawable/ic_zoom_in_white_48dp"
-        android:title="@string/action_aumentar_fonte"
-        app:showAsAction="always" />
-    <item
-        android:id="@+id/action_diminuir_fonte"
-        android:icon="@drawable/ic_zoom_out_white_48dp"
-        android:title="@string/action_diminuir_fonte"
-        app:showAsAction="always" />
-    <item
         android:id="@+id/action_executar"
         android:icon="@drawable/ic_play_arrow_white_48dp"
         android:title="@string/action_executar"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/action_abrir_exemplo"
+        android:icon="@drawable/ic_folder_open_white_48px"
+        android:title="@string/action_abrir_exemplo"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_aumentar_fonte"
+        android:icon="@drawable/ic_zoom_in_white_48dp"
+        android:title="@string/action_aumentar_fonte"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_diminuir_fonte"
+        android:icon="@drawable/ic_zoom_out_white_48dp"
+        android:title="@string/action_diminuir_fonte"
+        app:showAsAction="ifRoom" />
 </menu>

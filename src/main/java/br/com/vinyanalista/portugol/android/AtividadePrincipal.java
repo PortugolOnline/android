@@ -6,9 +6,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 
-import br.com.vinyanalista.portugol.interpretador.Exemplo;
-
 public class AtividadePrincipal extends AtividadeBase implements EditorListener {
+    static final int REQUEST_ABRIR_EXEMPLO = 1;
+
     protected Editor editor;
     protected Menu menuToolbarPrincipal;
 
@@ -35,6 +35,9 @@ public class AtividadePrincipal extends AtividadeBase implements EditorListener 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_abrir_exemplo:
+                abrirExemplo();
+                return true;
             case R.id.action_aumentar_fonte:
                 aumentarFonte();
                 return true;
@@ -56,6 +59,19 @@ public class AtividadePrincipal extends AtividadeBase implements EditorListener 
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_ABRIR_EXEMPLO:
+                if (resultCode == RESULT_OK) {
+                    String exemplo = data.getStringExtra(AtividadeAbrirExemplo.EXTRA_EXEMPLO_SELECIONADO);
+                    editor.setCodigoFonte(exemplo);
+                    editor.limparHistoricoDesfazerRefazer();
+                }
+                break;
+        }
+    }
+
+    @Override
     public void aoAtualizarCodigoFonte(Editor editor) {
     }
 
@@ -65,22 +81,24 @@ public class AtividadePrincipal extends AtividadeBase implements EditorListener 
         menuToolbarPrincipal.findItem(R.id.action_refazer).setEnabled(editor.isRefazerPossivel());
     }
 
-    public void aumentarFonte() {
+    private void abrirExemplo() {
+        Intent intent = new Intent(getBaseContext(), AtividadeAbrirExemplo.class);
+        startActivityForResult(intent, REQUEST_ABRIR_EXEMPLO);
+    }
+
+    private void aumentarFonte() {
         editor.aumentarFonte();
     }
 
-    protected void desfazer() {
+    private void desfazer() {
         editor.desfazer();
     }
 
-    protected void diminuirFonte() {
+    private void diminuirFonte() {
         editor.diminuirFonte();
     }
 
-    protected void executar() {
-        // TODO Apenas teste, remover
-        editor.setCodigoFonte(Exemplo.ESTRUTURA_SEQUENCIAL.getProgramaFonte());
-
+    private void executar() {
         Intent intent = new Intent(getBaseContext(), AtividadeConsole.class);
         Bundle argumentos = new Bundle();
         argumentos.putString(AtividadeConsole.CODIGO_FONTE, editor.getCodigoFonte());
@@ -88,7 +106,7 @@ public class AtividadePrincipal extends AtividadeBase implements EditorListener 
         startActivity(intent);
     }
 
-    protected void refazer() {
+    private void refazer() {
         editor.refazer();
     }
 }

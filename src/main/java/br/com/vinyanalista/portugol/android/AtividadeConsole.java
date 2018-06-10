@@ -43,7 +43,7 @@ public class AtividadeConsole extends AtividadeBase implements EscutaDeExecutor 
         setContentView(R.layout.atividade_console);
 
         configurarToolbar();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        configurarBotaoDeVoltar();
 
         tvSaida = (TextView) findViewById(R.id.saida);
         svSaida = (ScrollView) findViewById(R.id.scroll_saida);
@@ -104,20 +104,15 @@ public class AtividadeConsole extends AtividadeBase implements EscutaDeExecutor 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-        }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void aoEncerrarExecucao(ErroEmTempoDeExecucao erroEmTempoDeExecucao) {
-        Log.d(TAG, "aoEncerrarExecucao()");
-        if (erroEmTempoDeExecucao != null) {
+        // TODO Esse método é realmente necessário?
+        /*if (erroEmTempoDeExecucao != null) {
             tratarErro(erroEmTempoDeExecucao);
-        }
+        }*/
     }
 
     class TerminalAndroid extends Terminal {
@@ -127,6 +122,9 @@ public class AtividadeConsole extends AtividadeBase implements EscutaDeExecutor 
             if (BuildConfig.DEBUG && isEncerrado()) {
                 throw new AssertionError("Chamada a erro() com o terminal já encerrado");
             }
+            /*if (isEncerrado()) {
+                return;
+            }*/
             AtividadeConsole.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -207,7 +205,7 @@ public class AtividadeConsole extends AtividadeBase implements EscutaDeExecutor 
                 public void run() {
                     btEntrar.setEnabled(false);
                     edEntrada.setEnabled(false);
-                    edEntrada.setText(R.string.vazio);
+                    edEntrada.setText(R.string.vazia);
                     adicionarASaida(leitura, Color.CYAN);
                 }
             });
