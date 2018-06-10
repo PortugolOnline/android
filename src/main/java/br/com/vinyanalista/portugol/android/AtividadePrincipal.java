@@ -6,6 +6,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 
+import br.com.vinyanalista.portugol.interpretador.Exemplo;
+
 public class AtividadePrincipal extends AtividadeBase implements EditorListener {
     protected Editor editor;
     protected Menu menuToolbarPrincipal;
@@ -77,7 +79,7 @@ public class AtividadePrincipal extends AtividadeBase implements EditorListener 
 
     protected void executar() {
         // TODO Apenas teste, remover
-        editor.setCodigoFonte("algoritmo\nescreva \"Olá, mundo!\"\nfim_algoritmo.");
+        editor.setCodigoFonte(Exemplo.ESTRUTURA_SEQUENCIAL.getProgramaFonte());
 
         Intent intent = new Intent(getBaseContext(), AtividadeConsole.class);
         Bundle argumentos = new Bundle();

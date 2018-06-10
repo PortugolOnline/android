@@ -23,9 +23,11 @@ import br.com.vinyanalista.portugol.interpretador.Interpretador;
 import br.com.vinyanalista.portugol.interpretador.Terminal;
 import br.com.vinyanalista.portugol.interpretador.analise.ErroSemantico;
 import br.com.vinyanalista.portugol.interpretador.execucao.ErroEmTempoDeExecucao;
+import br.com.vinyanalista.portugol.interpretador.execucao.EscutaDeExecutor;
 
-public class AtividadeConsole extends AtividadeBase {
+public class AtividadeConsole extends AtividadeBase implements EscutaDeExecutor {
     static final String CODIGO_FONTE = "CODIGO_FONTE";
+    static final String TAG = "TESTE";
 
     TextView tvSaida;
     ScrollView svSaida;
@@ -71,13 +73,14 @@ public class AtividadeConsole extends AtividadeBase {
         btEntrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                entrar();
+                terminal.entrar();
             }
         });
 
         btEncerrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                terminal.informacao("\nA execução do programa foi interrompida pelo usuário.");
                 terminal.encerrar();
             }
         });
@@ -90,6 +93,7 @@ public class AtividadeConsole extends AtividadeBase {
         String codigoFonte = argumentos.getString(CODIGO_FONTE);
         terminal = new TerminalAndroid();
         interpretador = new Interpretador(terminal);
+        interpretador.adicionarEscutaDeExecutor(this);
         try {
             interpretador.analisar(codigoFonte);
             interpretador.executar();
@@ -108,43 +112,87 @@ public class AtividadeConsole extends AtividadeBase {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void aoEncerrarExecucao(ErroEmTempoDeExecucao erroEmTempoDeExecucao) {
+        Log.d(TAG, "aoEncerrarExecucao()");
+        if (erroEmTempoDeExecucao != null) {
+            tratarErro(erroEmTempoDeExecucao);
+        }
+    }
+
     class TerminalAndroid extends Terminal {
         @Override
-        public void erro(String mensagemDeErro) {
+        public void erro(final String mensagemDeErro) {
+            Log.d(TAG, "erro(" + mensagemDeErro + ")");
             if (BuildConfig.DEBUG && isEncerrado()) {
                 throw new AssertionError("Chamada a erro() com o terminal já encerrado");
             }
-            adicionarASaida(mensagemDeErro, Color.RED);
+            AtividadeConsole.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adicionarASaida(mensagemDeErro, Color.RED);
+                }
+            });
         }
 
         @Override
         public synchronized void encerrar() {
+            Log.d(TAG, "encerrar()");
             if (BuildConfig.DEBUG && isEncerrado()) {
                 throw new AssertionError("Chamada a encerrar() com o terminal já encerrado");
             }
             super.encerrar();
-            btEntrar.setEnabled(false);
-            // TODO android.util.AndroidRuntimeException: Animators may only be run on Looper threads
-            //btEncerrar.setEnabled(false);
-            edEntrada.setEnabled(false);
+
+            AtividadeConsole.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    btEntrar.setEnabled(false);
+                    btEncerrar.setEnabled(false);
+                    edEntrada.setEnabled(false);
+                }
+            });
+
+            notify();
+        }
+
+        private synchronized void entrar() {
+            Log.d(TAG, "entrar()");
             notify();
         }
 
         @Override
-        protected void escrever(String mensagem) {
-            adicionarASaida(mensagem, Color.BLACK);
+        protected void escrever(final String mensagem) {
+            Log.d(TAG, "escrever(" + mensagem + ")");
+            AtividadeConsole.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adicionarASaida(mensagem, Color.BLACK);
+                }
+            });
         }
 
         @Override
-        public void informacao(String mensagemDeInformacao) {
-            adicionarASaida(mensagemDeInformacao, Color.BLUE);
+        public void informacao(final String mensagemDeInformacao) {
+            Log.d(TAG, "informacao(" + mensagemDeInformacao + ")");
+            AtividadeConsole.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adicionarASaida(mensagemDeInformacao, Color.BLUE);
+                }
+            });
         }
 
         @Override
         protected String ler() {
-            btEntrar.setEnabled(true);
-            edEntrada.setEnabled(true);
-            edEntrada.requestFocus();
+            Log.d(TAG, "ler()");
+            AtividadeConsole.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    btEntrar.setEnabled(true);
+                    edEntrada.setEnabled(true);
+                    edEntrada.requestFocus();
+                }
+            });
             try {
                 wait();
             } catch (InterruptedException excecao) {
@@ -153,31 +201,34 @@ public class AtividadeConsole extends AtividadeBase {
             if (isEncerrado()) {
                 return null;
             }
-            btEntrar.setEnabled(false);
-            edEntrada.setEnabled(false);
-            String leitura = edEntrada.getText().toString();
-            edEntrada.setText(R.string.vazio);
-            adicionarASaida(leitura, Color.CYAN);
+            final String leitura = edEntrada.getText().toString();
+            AtividadeConsole.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    btEntrar.setEnabled(false);
+                    edEntrada.setEnabled(false);
+                    edEntrada.setText(R.string.vazio);
+                    adicionarASaida(leitura, Color.CYAN);
+                }
+            });
             return leitura;
         }
 
         @Override
         public void limpar() {
-
+            Log.d(TAG, "limpar()");
         }
     }
 
     private void adicionarASaida(String texto, int cor) {
-        SpannableString textoComEstilo = new SpannableString(texto);
+        SpannableString textoComEstilo = new SpannableString(texto + "\n");
         textoComEstilo.setSpan(new ForegroundColorSpan(cor), 0, textoComEstilo.length(), 0);
         tvSaida.append(textoComEstilo);
     }
 
-    private synchronized void entrar() {
-        notify();
-    }
 
     private void tratarErro(Exception erro) {
+        Log.d(TAG, "tratarErro()");
         int linha = -1;
         int coluna = -1;
         StringBuilder mensagemDeErro = new StringBuilder("Erro");
@@ -209,5 +260,8 @@ public class AtividadeConsole extends AtividadeBase {
         }
         mensagemDeErro.append("\n").append(erro.getLocalizedMessage());
         terminal.erro(mensagemDeErro.toString());
+        if (!terminal.isEncerrado()) {
+            terminal.encerrar();
+        }
     }
 }
