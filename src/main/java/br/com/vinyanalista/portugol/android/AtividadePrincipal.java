@@ -2,7 +2,6 @@ package br.com.vinyanalista.portugol.android;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
@@ -56,8 +55,6 @@ public class AtividadePrincipal extends AtividadeBase implements EditorListener 
 
     @Override
     public void aoAtualizarCodigoFonte(Editor editor) {
-        // TODO Apenas teste, remover
-        Log.d("teste", editor.getCodigoFonte() + "\n\n");
     }
 
     @Override
@@ -79,7 +76,14 @@ public class AtividadePrincipal extends AtividadeBase implements EditorListener 
     }
 
     protected void executar() {
-        startActivity(new Intent(getBaseContext(), AtividadeConsole.class));
+        // TODO Apenas teste, remover
+        editor.setCodigoFonte("algoritmo\nescreva \"Olá, mundo!\"\nfim_algoritmo.");
+
+        Intent intent = new Intent(getBaseContext(), AtividadeConsole.class);
+        Bundle argumentos = new Bundle();
+        argumentos.putString(AtividadeConsole.CODIGO_FONTE, editor.getCodigoFonte());
+        intent.putExtras(argumentos);
+        startActivity(intent);
     }
 
     protected void refazer() {
