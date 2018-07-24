@@ -11,6 +11,7 @@
         android:theme="@style/TemaDoAplicativo">
         <activity
             android:name=".AtividadePrincipal"
+            android:theme="@style/TemaDoAplicativo.NavDrawer"
             android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

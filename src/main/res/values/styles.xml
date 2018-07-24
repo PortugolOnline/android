@@ -7,6 +7,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- Tema do Navigation Drawer -->
+    <style name="TemaDoAplicativo.NavDrawer">
+    </style>
+
     <!-- https://guides.codepath.com/android/using-the-app-toolbar -->
     <style name="TemaDaActionBar" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:textColorPrimary">@android:color/white</item>

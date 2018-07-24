@@ -8,5 +8,11 @@
     <string name="action_refazer">Refazer</string>
     <string name="atividade_abrir_exemplo">Abrir exemplo</string>
     <string name="atividade_console">Console</string>
+    <string name="nav_drawer_abrir">Abrir navegação</string>
+    <string name="nav_drawer_abrir_arquivo">Abrir arquivo</string>
+    <string name="nav_drawer_abrir_exemplo">Abrir exemplo</string>
+    <string name="nav_drawer_compartilhar">Compartilhar</string>
+    <string name="nav_drawer_fechar">Fechar navegação</string>
+    <string name="nav_header_titulo">Nome do arquivo</string>
     <string name="vazia" />
 </resources>

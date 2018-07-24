@@ -18,6 +18,7 @@ public class AtividadePrincipal extends AtividadeBase implements EditorListener 
         setContentView(R.layout.atividade_principal);
 
         configurarToolbar();
+        configurarNavDrawer();
 
         WebView webView = (WebView) findViewById(R.id.editor);
 
