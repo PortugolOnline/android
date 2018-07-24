@@ -17,11 +17,6 @@
         android:title="@string/action_executar"
         app:showAsAction="always" />
     <item
-        android:id="@+id/action_abrir_exemplo"
-        android:icon="@drawable/ic_folder_open_white_48px"
-        android:title="@string/action_abrir_exemplo"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/action_aumentar_fonte"
         android:icon="@drawable/ic_zoom_in_white_48dp"
         android:title="@string/action_aumentar_fonte"

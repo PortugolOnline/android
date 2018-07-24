@@ -2,15 +2,21 @@ package br.com.vinyanalista.portugol.android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 
-public class AtividadePrincipal extends AtividadeBase implements EditorListener {
+public class AtividadePrincipal extends AtividadeBase implements EditorListener, NavigationView.OnNavigationItemSelectedListener {
     static final int REQUEST_ABRIR_EXEMPLO = 1;
 
-    protected Editor editor;
-    protected Menu menuToolbarPrincipal;
+    private DrawerLayout drawerLayout;
+    private Editor editor;
+    private Menu menuToolbarPrincipal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +33,15 @@ public class AtividadePrincipal extends AtividadeBase implements EditorListener 
     }
 
     @Override
+    public void onBackPressed() {
+        if ((drawerLayout != null) && (drawerLayout.isDrawerOpen(GravityCompat.START))) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menuToolbarPrincipal = menu;
         getMenuInflater().inflate(R.menu.toolbar_principal, menu);
@@ -36,9 +51,6 @@ public class AtividadePrincipal extends AtividadeBase implements EditorListener 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_abrir_exemplo:
-                abrirExemplo();
-                return true;
             case R.id.action_aumentar_fonte:
                 aumentarFonte();
                 return true;
@@ -73,6 +85,22 @@ public class AtividadePrincipal extends AtividadeBase implements EditorListener 
     }
 
     @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        if (drawerLayout != null) {
+            switch (item.getItemId()) {
+                case R.id.nav_drawer_abrir_arquivo:
+                    break;
+                case R.id.nav_drawer_abrir_exemplo:
+                    abrirExemplo();
+                case R.id.nav_drawer_compartilhar:
+                    break;
+            }
+        }
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
     public void aoAtualizarCodigoFonte(Editor editor) {
     }
 
@@ -89,6 +117,17 @@ public class AtividadePrincipal extends AtividadeBase implements EditorListener 
 
     private void aumentarFonte() {
         editor.aumentarFonte();
+    }
+
+    private void configurarNavDrawer() {
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
+                R.string.nav_drawer_abrir, R.string.nav_drawer_fechar);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
     private void desfazer() {
