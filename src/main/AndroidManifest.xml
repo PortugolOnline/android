@@ -23,10 +23,6 @@
             android:name=".AtividadeAbrirExemplo"
             android:label="@string/atividade_abrir_exemplo"
             android:parentActivityName=".AtividadePrincipal"></activity>
-        <activity
-            android:name=".AtividadeConsole"
-            android:label="@string/atividade_console"
-            android:parentActivityName=".AtividadePrincipal" />
     </application>
 
 </manifest>

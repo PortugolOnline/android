@@ -1,4 +1,4 @@
-package br.com.vinyanalista.portugol.android;
+package br.com.vinyanalista.portugol.android.fragment;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -7,8 +7,10 @@ import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
@@ -16,6 +18,9 @@ import android.widget.TextView;
 
 import java.io.IOException;
 
+import br.com.vinyanalista.portugol.android.AtividadePrincipal;
+import br.com.vinyanalista.portugol.android.BuildConfig;
+import br.com.vinyanalista.portugol.android.R;
 import br.com.vinyanalista.portugol.base.lexer.LexerException;
 import br.com.vinyanalista.portugol.base.parser.ParserException;
 import br.com.vinyanalista.portugol.interpretador.Interpretador;
@@ -24,31 +29,44 @@ import br.com.vinyanalista.portugol.interpretador.analise.ErroSemantico;
 import br.com.vinyanalista.portugol.interpretador.execucao.ErroEmTempoDeExecucao;
 import br.com.vinyanalista.portugol.interpretador.execucao.EscutaDeExecutor;
 
-public class AtividadeConsole extends AtividadeBase implements EscutaDeExecutor {
+public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
     static final String CODIGO_FONTE = "CODIGO_FONTE";
     static final String TAG = "TESTE";
 
-    TextView tvSaida;
-    ScrollView svSaida;
-    EditText edEntrada;
-    Button btEntrar, btEncerrar;
+    private AtividadePrincipal atividadePrincipal;
 
-    protected Interpretador interpretador;
-    protected TerminalAndroid terminal;
+    private TextView tvSaida;
+    private ScrollView svSaida;
+    private EditText edEntrada;
+    private Button btEntrar, btEncerrar;
+
+    private Interpretador interpretador;
+    private TerminalAndroid terminal;
+
+    public ConsoleFragment() {
+    }
+
+    public static ConsoleFragment newInstance(AtividadePrincipal atividadePrincipal) {
+        ConsoleFragment fragment = new ConsoleFragment();
+        fragment.atividadePrincipal = atividadePrincipal;
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.atividade_console);
+    }
 
-        configurarToolbar();
-        configurarBotaoDeVoltar();
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_console, container, false);
 
-        tvSaida = (TextView) findViewById(R.id.saida);
-        svSaida = (ScrollView) findViewById(R.id.scroll_saida);
-        edEntrada = (EditText) findViewById(R.id.entrada);
-        btEntrar = (Button) findViewById(R.id.entrar);
-        btEncerrar = (Button) findViewById(R.id.encerrar);
+        tvSaida = (TextView) view.findViewById(R.id.saida);
+        svSaida = (ScrollView) view.findViewById(R.id.scroll_saida);
+        edEntrada = (EditText) view.findViewById(R.id.entrada);
+        btEntrar = (Button) view.findViewById(R.id.entrar);
+        btEncerrar = (Button) view.findViewById(R.id.encerrar);
 
         // Rola a TextView para baixo sempre que texto é adicionado
         // https://stackoverflow.com/a/19860791/1657502
@@ -83,22 +101,8 @@ public class AtividadeConsole extends AtividadeBase implements EscutaDeExecutor 
                 terminal.encerrar();
             }
         });
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Bundle argumentos = getIntent().getExtras();
-        String codigoFonte = argumentos.getString(CODIGO_FONTE);
-        terminal = new TerminalAndroid();
-        interpretador = new Interpretador(terminal);
-        interpretador.adicionarEscutaDeExecutor(this);
-        try {
-            interpretador.analisar(codigoFonte);
-            interpretador.executar();
-        } catch (Exception erro) {
-            tratarErro(erro);
-        }
+        return view;
     }
 
     @Override
@@ -124,7 +128,7 @@ public class AtividadeConsole extends AtividadeBase implements EscutaDeExecutor 
             /*if (isEncerrado()) {
                 return;
             }*/
-            AtividadeConsole.this.runOnUiThread(new Runnable() {
+            atividadePrincipal.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     adicionarASaida(mensagemDeErro, Color.RED);
@@ -140,7 +144,7 @@ public class AtividadeConsole extends AtividadeBase implements EscutaDeExecutor 
             }
             super.encerrar();
 
-            AtividadeConsole.this.runOnUiThread(new Runnable() {
+            atividadePrincipal.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     btEntrar.setEnabled(false);
@@ -160,7 +164,7 @@ public class AtividadeConsole extends AtividadeBase implements EscutaDeExecutor 
         @Override
         protected void escrever(final String mensagem) {
             Log.d(TAG, "escrever(" + mensagem + ")");
-            AtividadeConsole.this.runOnUiThread(new Runnable() {
+            atividadePrincipal.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     adicionarASaida(mensagem, Color.BLACK);
@@ -171,7 +175,7 @@ public class AtividadeConsole extends AtividadeBase implements EscutaDeExecutor 
         @Override
         public void informacao(final String mensagemDeInformacao) {
             Log.d(TAG, "informacao(" + mensagemDeInformacao + ")");
-            AtividadeConsole.this.runOnUiThread(new Runnable() {
+            atividadePrincipal.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     adicionarASaida(mensagemDeInformacao, Color.BLUE);
@@ -182,7 +186,7 @@ public class AtividadeConsole extends AtividadeBase implements EscutaDeExecutor 
         @Override
         protected String ler() {
             Log.d(TAG, "ler()");
-            AtividadeConsole.this.runOnUiThread(new Runnable() {
+            atividadePrincipal.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     btEntrar.setEnabled(true);
@@ -199,7 +203,7 @@ public class AtividadeConsole extends AtividadeBase implements EscutaDeExecutor 
                 return null;
             }
             final String leitura = edEntrada.getText().toString();
-            AtividadeConsole.this.runOnUiThread(new Runnable() {
+            atividadePrincipal.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     btEntrar.setEnabled(false);
@@ -223,6 +227,17 @@ public class AtividadeConsole extends AtividadeBase implements EscutaDeExecutor 
         tvSaida.append(textoComEstilo);
     }
 
+    public void executar(String codigoFonte) {
+        terminal = new TerminalAndroid();
+        interpretador = new Interpretador(terminal);
+        interpretador.adicionarEscutaDeExecutor(this);
+        try {
+            interpretador.analisar(codigoFonte);
+            interpretador.executar();
+        } catch (Exception erro) {
+            tratarErro(erro);
+        }
+    }
 
     private void tratarErro(Exception erro) {
         Log.d(TAG, "tratarErro()");

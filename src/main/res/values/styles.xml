@@ -7,10 +7,21 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <!-- Tema do Navigation Drawer -->
+    <!-- Navigation Drawer -->
     <style name="TemaDoAplicativo.NavDrawer">
     </style>
 
+    <!-- TabLayout -->
+    <!-- https://guides.codepath.com/android/google-play-style-tabs-using-tablayout -->
+    <style name="TemaDoAplicativo.TabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabTextAppearance">@style/TemaDoAplicativo.TabLayout.TextoDoTitulo</item>
+    </style>
+
+    <style name="TemaDoAplicativo.TabLayout.TextoDoTitulo" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+    </style>
+
+    <!-- Toolbar -->
     <!-- https://guides.codepath.com/android/using-the-app-toolbar -->
     <style name="TemaDaActionBar" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:textColorPrimary">@android:color/white</item>
