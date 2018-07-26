@@ -1,3 +1,79 @@
+/////////////////////////
+// Palavras reservadas //
+/////////////////////////
+
+var portugolPalavrasReservadas = [
+    // 3.1 Estrutura sequencial em algoritmos
+    'algoritmo',
+    'declare',
+    'fim_algoritmo',
+    // 3.1.3 Comando de entrada em algoritmos
+    'leia',
+    // 3.1.4 Comando de saída em algoritmos
+    'escreva',
+    // 4.1.1 Estrutura condicional simples
+    'se',
+    'entao',
+    'inicio',
+    'fim',
+    // 4.1.2 Estrutura condicional composta
+    'senao',
+    // 5.1.1 Estrutura de repetição para número definido de repetições (estrutura para)
+    'para',
+    'ate',
+    'faca',
+    'passo',
+    // 5.1.2 Estrutura de repetição para número indefinido de repetições e teste no início (estrutura enquanto)
+    'enquanto',
+    // 5.1.3 Estrutura de repetição para número indefinido de repetições e teste no final (estrutura repita)
+    'repita',
+    // 8.1 Sub-rotinas (programação modularizada)
+    'sub-rotina',
+    'retorne',
+    'fim_sub_rotina'
+];
+
+var portugolTipos = [
+    // 3.1.1 Declaração de variáveis em algoritmos
+    'numerico',
+    'literal',
+    'logico'
+];
+
+// 10.2 Declaração de registros em algoritmos
+// registro
+
+// Sub-rotinas pré-definidas
+var portugolSubrotinasPreDefinidas = [
+    'arredonda',
+    'cosseno',
+    'parte_inteira',
+    'potencia',
+    'raiz_enesima',
+    'raiz_quadrada',
+    'resto',
+    'seno',
+    'limpar_tela',
+    'obtenha_ano',
+    'obtenha_data',
+    'obtenha_dia',
+    'obtenha_hora',
+    'obtenha_horario',
+    'obtenha_mes',
+    'obtenha_minuto',
+    'obtenha_segundo'
+];
+
+/////////////
+// Valores //
+/////////////
+
+// 1.6.2 Lógico
+var portugolValoresLogicos = [
+    'verdadeiro',
+    'falso'
+];
+
 define("ace/mode/portugol_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
 "use strict";
 
@@ -10,7 +86,7 @@ var portugolHighlightRules = function() {
          // Palavras reservadas
        [ { caseInsensitive: true,
            token: 'keyword.control.portugol',
-           regex: '\\b(?:(algoritmo|declare|fim_algoritmo|leia|escreva|se|entao|inicio|fim|senao|para|ate|faca|passo|enquanto|repita|sub-rotina|retorne|fim_sub_rotina))\\b' },
+           regex: new RegExp(portugolPalavrasReservadas.join('|'), 'i') },
 
         /* { caseInsensitive: true,
            token:
@@ -27,7 +103,7 @@ var portugolHighlightRules = function() {
 
          // Tipos
          { token: 'storage.type.portugol',
-           regex: '\\b(?:(numerico|literal|logico))\\b' },
+           regex: new RegExp(portugolTipos.join('|'), 'i') },
 
          // Registro
          { token: 'support.type.portugol',
@@ -35,11 +111,11 @@ var portugolHighlightRules = function() {
 
          // Sub-rotinas pré-definidas
          { token: 'support.function.portugol',
-           regex: '\\b(?:(arredonda|cosseno|parte_inteira|potencia|raiz_enesima|raiz_quadrada|resto|seno|limpar_tela|obtenha_ano|obtenha_data|obtenha_dia|obtenha_hora|obtenha_horario|obtenha_mes|obtenha_minuto|obtenha_segundo))\\b' },
+           regex: new RegExp(portugolSubrotinasPreDefinidas.join('|'), 'i') },
 
          // Valores - Lógico
          { token: 'constant.language.portugol',
-           regex: '\\b(?:(verdadeiro|falso))\\b' },
+           regex: new RegExp(portugolValoresLogicos.join('|'), 'i') },
 
          // Valores - Numérico
          { token: 'constant.numeric.portugol',
@@ -206,10 +282,38 @@ var TextMode = require("./text").Mode;
 var portugolHighlightRules = require("./portugol_highlight_rules").portugolHighlightRules;
 var FoldMode = require("./folding/coffee").FoldMode;
 
+var PortugolCompletions = function() {
+    // Compleção de código
+    var configuracaoDaComplecao = [].concat(
+        portugolPalavrasReservadas.map(function(palavra) {
+            return {name: palavra, value: palavra, score: 1, meta: "palavra reservada"}
+        }),
+        portugolTipos.map(function(tipo) {
+            return {name: tipo, value: tipo, score: 1, meta: "tipo"}
+        }),
+        [{name: "registro", value: "registro", score: 1, meta: "tipo"}],
+        portugolSubrotinasPreDefinidas.map(function(subrotina) {
+            return {name: subrotina, value: subrotina, score: 1, meta: "sub-rotina"}
+        }),
+        portugolValoresLogicos.map(function(valor) {
+            return {name: valor, value: valor, score: 1, meta: "valor logico"}
+        })
+    );
+
+    this.getCompletions = function(state, session, pos, prefix, callback) {
+        if (prefix.length < 2) {
+            callback(null, []);
+        } else {
+            callback(null, configuracaoDaComplecao);
+        }
+    };
+};
+
 var Mode = function() {
     this.HighlightRules = portugolHighlightRules;
     this.foldingRules = new FoldMode();
     this.$behaviour = this.$defaultBehaviour;
+    this.completer = new PortugolCompletions();
 };
 oop.inherits(Mode, TextMode);
 
