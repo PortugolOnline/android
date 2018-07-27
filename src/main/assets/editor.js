@@ -3,10 +3,17 @@ const TAMANHO_DA_FONTE_INICIAL = 12;
 
 var tamanhoDaFonte = TAMANHO_DA_FONTE_INICIAL;
 
+var langTools = ace.require("ace/ext/language_tools");
 var editor = ace.edit('editor');
-editor.setFontSize(tamanhoDaFonte);
 editor.setTheme('ace/theme/textmate');
-editor.session.setMode('ace/mode/portugol');
+editor.getSession().setMode('ace/mode/portugol');
+editor.setOptions({
+    enableBasicAutocompletion: true,
+    //enableSnippets: true,
+    enableLiveAutocompletion: true
+});
+
+editor.setFontSize(tamanhoDaFonte);
 
 function aoEditarCodigo() {
     atualizarCodigoFonte();
