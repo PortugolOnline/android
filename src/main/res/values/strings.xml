@@ -5,12 +5,17 @@
     <string name="action_diminuir_fonte">Diminuir fonte</string>
     <string name="action_executar">Executar</string>
     <string name="action_refazer">Refazer</string>
+    <string name="action_salvar">Salvar</string>
+    <string name="armazenamento_interno">Armazenamento interno</string>
     <string name="atividade_abrir_exemplo">Abrir exemplo</string>
     <string name="nav_drawer_abrir">Abrir navegação</string>
     <string name="nav_drawer_abrir_arquivo">Abrir arquivo</string>
     <string name="nav_drawer_abrir_exemplo">Abrir exemplo</string>
     <string name="nav_drawer_compartilhar">Compartilhar</string>
     <string name="nav_drawer_fechar">Fechar navegação</string>
-    <string name="nav_header_titulo">Nome do arquivo</string>
+    <string name="nav_drawer_novo">Novo</string>
+    <string name="nav_drawer_salvar">Salvar</string>
+    <string name="nav_drawer_salvar_como">Salvar como</string>
+    <string name="sd_card">Cartão SD</string>
     <string name="vazia" />
 </resources>

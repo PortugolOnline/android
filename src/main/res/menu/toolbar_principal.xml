@@ -2,6 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_salvar"
+        android:icon="@drawable/ic_save_white_48dp"
+        android:title="@string/action_salvar"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_executar"
+        android:icon="@drawable/ic_play_arrow_white_48dp"
+        android:title="@string/action_executar"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/action_desfazer"
         android:icon="@drawable/ic_undo_white_48dp"
         android:title="@string/action_desfazer"
@@ -10,11 +20,6 @@
         android:id="@+id/action_refazer"
         android:icon="@drawable/ic_redo_white_48dp"
         android:title="@string/action_refazer"
-        app:showAsAction="always" />
-    <item
-        android:id="@+id/action_executar"
-        android:icon="@drawable/ic_play_arrow_white_48dp"
-        android:title="@string/action_executar"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_aumentar_fonte"

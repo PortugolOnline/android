@@ -3,6 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
     <item
+        android:id="@+id/nav_drawer_novo"
+        android:icon="@drawable/ic_insert_drive_file_black_48dp"
+        android:title="@string/nav_drawer_novo" />
+    <item
+        android:id="@+id/nav_drawer_salvar"
+        android:icon="@drawable/ic_save_black_48dp"
+        android:title="@string/nav_drawer_salvar" />
+    <item
+        android:id="@+id/nav_drawer_salvar_como"
+        android:icon="@drawable/ic_save_black_48dp"
+        android:title="@string/nav_drawer_salvar_como" />
+    <item
         android:id="@+id/nav_drawer_abrir_arquivo"
         android:icon="@drawable/ic_folder_open_black_48dp"
         android:title="@string/nav_drawer_abrir_arquivo" />

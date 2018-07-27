@@ -26,9 +26,8 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
-        android:id="@+id/nav_header_titulo"
+        android:id="@+id/nav_header_nome_do_arquivo"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/nav_header_titulo" />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

@@ -10,6 +10,10 @@ android {
         versionName "0.1.0-beta"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", applicationId + "-" + versionName)
+
+        def documentsAuthorityValue = "br.com.vinyanalista.portugol.documents"
+        manifestPlaceholders = [documentsAuthority: documentsAuthorityValue]
+        buildConfigField "String", "DOCUMENTS_AUTHORITY", "\"${documentsAuthorityValue}\""
     }
     buildTypes {
         release {
