@@ -31,8 +31,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import br.com.vinyanalista.portugol.android.adapter.TabsAdapter;
+import br.com.vinyanalista.portugol.android.fragment.CompartilharFragment;
 
-public class AtividadePrincipal extends AtividadeBase implements NavigationView.OnNavigationItemSelectedListener {
+public class AtividadePrincipal extends AtividadeBase implements NavigationView.OnNavigationItemSelectedListener, CompartilharFragment.CompartilharFragmentListener {
     private static final String ARQUIVO_SEM_NOME = "Sem nome";
     private static final String NOME_DE_ARQUIVO_PADRAO = "algoritmo.por";
     static final int REQUEST_ABRIR_ARQUIVO = 1;
@@ -129,6 +130,7 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
                     break;
                 case R.id.nav_drawer_abrir_exemplo:
                     abrirExemplo();
+                    break;
                 case R.id.nav_drawer_compartilhar:
                     compartilhar();
                     break;
@@ -265,7 +267,23 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
     }
 
     private void compartilhar() {
+        CompartilharFragment compartilhar = new CompartilharFragment();
+        compartilhar.show(getSupportFragmentManager(), "CompartilharFragment");
+    }
+
+    @Override
+    public void compartilharComoArquivo() {
         naoImplementadoAinda();
+    }
+
+    @Override
+    public void compartilharComoTexto() {
+        // https://developer.android.com/training/sharing/send#send-text-content
+        Intent intentCompartilhar = new Intent(Intent.ACTION_SEND);
+        intentCompartilhar.setType("text/plain");
+        intentCompartilhar.putExtra(Intent.EXTRA_SUBJECT, getResources().getText(R.string.compartilhar_titulo));
+        intentCompartilhar.putExtra(Intent.EXTRA_TEXT, getCodigoFonte());
+        startActivity(Intent.createChooser(intentCompartilhar, getResources().getText(R.string.compartilhar_como_texto)));
     }
 
     private void desfazer() {

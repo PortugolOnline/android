@@ -8,6 +8,11 @@
     <string name="action_salvar">Salvar</string>
     <string name="armazenamento_interno">Armazenamento interno</string>
     <string name="atividade_abrir_exemplo">Abrir exemplo</string>
+    <string name="compartilhar_como_texto">Compartilhar algoritmo como texto</string>
+    <string name="compartilhar_dialogo_titulo">Compartilhar como</string>
+    <string name="compartilhar_dialogo_opcao_arquivo">Como arquivo</string>
+    <string name="compartilhar_dialogo_opcao_texto">Como texto</string>
+    <string name="compartilhar_titulo">Meu algoritmo em Portugol</string>
     <string name="nav_drawer_abrir">Abrir navegação</string>
     <string name="nav_drawer_abrir_arquivo">Abrir arquivo</string>
     <string name="nav_drawer_abrir_exemplo">Abrir exemplo</string>
