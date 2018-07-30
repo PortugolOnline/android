@@ -1,6 +1,39 @@
 apply plugin: 'com.android.application'
 
+// Assinatura do APK: requisito para publicação na Google Play Store
+// https://developer.android.com/studio/publish/app-signing#secure-shared-keystore
+// https://stackoverflow.com/a/43230396/1657502
+
+// Antes de assinar, gerar a chave privada:
+// $ keytool -genkey -v -keystore ~/portugol.jks -keyalg RSA -keysize 2048 -validity 10000 -alias portugol
+
+// E criar um arquivo denominado keystore.properties no diretório raiz do projeto. Esse arquivo deve
+// conter as informações de assinatura, da seguinte forma:
+
+// storePassword=myStorePassword
+// keyPassword=mykeyPassword
+// keyAlias=myKeyAlias
+// storeFile=myStoreFileLocation
+
+// Create a variable called keystorePropertiesFile, and initialize it to your
+// keystore.properties file, in the rootProject folder.
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+
+// Initialize a new Properties() object called keystoreProperties.
+def keystoreProperties = new Properties()
+
+// Load your keystore.properties file into the keystoreProperties object.
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
+    signingConfigs {
+        config {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "br.com.vinyanalista.portugol.android"
@@ -21,8 +54,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    // TODO Assinatura do APK: requisito para publicação na Google Play Store
-    // Ver depois: https://stackoverflow.com/a/43230396/1657502
 }
 
 dependencies {
