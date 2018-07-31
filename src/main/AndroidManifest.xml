@@ -27,6 +27,17 @@
             android:label="@string/atividade_abrir_exemplo"
             android:parentActivityName=".AtividadePrincipal"></activity>
 
+        <!-- https://developer.android.com/training/secure-file-sharing/setup-sharing -->
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="br.com.vinyanalista.portugol.android.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+
         <receiver android:name="com.ianhanniballake.localstorage.MediaAvailabilityBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_MOUNTED" />

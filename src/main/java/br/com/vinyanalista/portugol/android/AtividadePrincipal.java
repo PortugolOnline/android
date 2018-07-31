@@ -15,6 +15,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -24,6 +25,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -48,6 +50,7 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
     private ViewPager viewPager;
 
     private Uri caminhoDoArquivo = null;
+    private String nomeDoArquivo = ARQUIVO_SEM_NOME;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -235,7 +238,7 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
                 limparHistoricoDesfazerRefazer();
                 this.caminhoDoArquivo = caminhoDoArquivo;
                 String displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                atualizarNomeDoArquivo(displayName);
+                setNomeDoArquivo(displayName);
             } catch (FileNotFoundException excecao) {
                 Snackbar.make(viewPager, "Erro: arquivo não encontrado", Snackbar.LENGTH_SHORT).show();
                 return;
@@ -256,10 +259,8 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
     private void abrirExemplo(String exemplo) {
         setCodigoFonte(exemplo);
         limparHistoricoDesfazerRefazer();
-    }
-
-    private void atualizarNomeDoArquivo(String nomeDoArquivo) {
-        tvNomeDoArquivo.setText(nomeDoArquivo);
+        caminhoDoArquivo = null;
+        setNomeDoArquivo(ARQUIVO_SEM_NOME);
     }
 
     private void aumentarFonte() {
@@ -273,7 +274,42 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
 
     @Override
     public void compartilharComoArquivo() {
-        naoImplementadoAinda();
+        // https://stackoverflow.com/a/28694269/1657502
+        // https://guides.codepath.com/android/Sharing-Content-with-Intents
+        // https://developer.android.com/training/data-storage/files
+        // https://developer.android.com/training/sharing/send#send-binary-content
+        // https://developer.android.com/training/secure-file-sharing/share-file
+        File compartilharPasta = new File(getCacheDir(), "compartilhar");
+        if (compartilharPasta.exists()) {
+            deletarRecursivamente(compartilharPasta);
+        }
+        compartilharPasta.mkdirs();
+
+        String compartilharNomeDoArquivo = nomeDoArquivo;
+        File compartilharArquivo = null;
+        try {
+            compartilharArquivo = new File(compartilharPasta, compartilharNomeDoArquivo);
+            FileOutputStream fos = new FileOutputStream(compartilharArquivo);
+            String codigoFonte = getCodigoFonte();
+            fos.write(codigoFonte.getBytes());
+            fos.close();
+        } catch (FileNotFoundException excecao) {
+            Snackbar.make(viewPager, "Erro: arquivo não encontrado", Snackbar.LENGTH_SHORT).show();
+            return;
+        } catch (IOException excecao) {
+            Snackbar.make(viewPager, "Erro de entrada/saída", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+
+        Uri compartilharUri = FileProvider.getUriForFile(this,
+                "br.com.vinyanalista.portugol.android.fileprovider", compartilharArquivo);
+
+        Intent intentCompartilhar = new Intent(Intent.ACTION_SEND);
+        intentCompartilhar.setType("text/plain");
+        intentCompartilhar.putExtra(Intent.EXTRA_SUBJECT, getResources().getText(R.string.compartilhar_titulo));
+        intentCompartilhar.putExtra(Intent.EXTRA_STREAM, compartilharUri);
+        intentCompartilhar.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(Intent.createChooser(intentCompartilhar, getResources().getText(R.string.compartilhar_como_arquivo)));
     }
 
     @Override
@@ -284,6 +320,15 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
         intentCompartilhar.putExtra(Intent.EXTRA_SUBJECT, getResources().getText(R.string.compartilhar_titulo));
         intentCompartilhar.putExtra(Intent.EXTRA_TEXT, getCodigoFonte());
         startActivity(Intent.createChooser(intentCompartilhar, getResources().getText(R.string.compartilhar_como_texto)));
+    }
+
+    private void deletarRecursivamente(File arquivoOuPasta) {
+        // https://stackoverflow.com/a/6425744/1657502
+        if (arquivoOuPasta.isDirectory())
+            for (File conteudo : arquivoOuPasta.listFiles())
+                deletarRecursivamente(conteudo);
+
+        arquivoOuPasta.delete();
     }
 
     private void desfazer() {
@@ -323,7 +368,7 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
             limparHistoricoDesfazerRefazer();
         }
         caminhoDoArquivo = null;
-        atualizarNomeDoArquivo(ARQUIVO_SEM_NOME);
+        setNomeDoArquivo(ARQUIVO_SEM_NOME);
     }
 
     private void refazer() {
@@ -366,7 +411,7 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
 
                 this.caminhoDoArquivo = caminhoDoArquivo;
                 String displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                atualizarNomeDoArquivo(displayName);
+                setNomeDoArquivo(displayName);
             } catch (FileNotFoundException excecao) {
                 Snackbar.make(viewPager, "Erro: arquivo não encontrado", Snackbar.LENGTH_SHORT).show();
                 return;
@@ -385,6 +430,11 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
 
     private void setCodigoFonte(String codigoFonte) {
         tabsAdapter.getEditorFragment().setCodigoFonte(codigoFonte);
+    }
+
+    private void setNomeDoArquivo(String nomeDoArquivo) {
+        this.nomeDoArquivo = nomeDoArquivo;
+        tvNomeDoArquivo.setText(nomeDoArquivo);
     }
 
     private void solicitarPermissaoParaEscreverArquivos(int requestCode) {
