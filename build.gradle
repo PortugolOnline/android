@@ -27,7 +27,7 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
     signingConfigs {
-        config {
+        release {
             keyAlias keystoreProperties['keyAlias']
             keyPassword keystoreProperties['keyPassword']
             storeFile file(keystoreProperties['storeFile'])
@@ -39,8 +39,8 @@ android {
         applicationId "br.com.vinyanalista.portugol.android"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 1
-        versionName "0.1.0-beta"
+        versionCode 2
+        versionName "0.2.0-beta"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", applicationId + "-" + versionName)
 
@@ -52,6 +52,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 }
