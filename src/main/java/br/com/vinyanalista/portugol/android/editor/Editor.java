@@ -12,7 +12,9 @@ public class Editor {
     protected final static String CODIFICACAO = "UTF-8";
 
     private String codigoFonte;
+    private int coluna;
     private boolean desfazerPossivel;
+    private int linha;
     protected final List<EditorListener> listeners = new ArrayList<EditorListener>();
     private boolean refazerPossivel;
     protected WebView webView;
@@ -51,6 +53,15 @@ public class Editor {
         }
     }
 
+    @JavascriptInterface
+    public void aoMovimentarCursor(int linha, int coluna) {
+        this.linha = linha;
+        this.coluna = coluna;
+        for (EditorListener listener : listeners) {
+            listener.aoMovimentarCursor(this);
+        }
+    }
+
     public void aumentarFonte() {
         webView.evaluateJavascript("aumentarFonte()", null);
     }
@@ -69,6 +80,14 @@ public class Editor {
 
     public String getCodigoFonte() {
         return codigoFonte;
+    }
+
+    public int getColuna() {
+        return coluna;
+    }
+
+    public int getLinha() {
+        return linha;
     }
 
     public boolean isDesfazerPossivel() {

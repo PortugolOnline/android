@@ -55,6 +55,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     static final int REQUEST_SALVAR_COMO_E_ABRIR_EXEMPLO = 7;
     static final int REQUEST_SALVAR_COMO_E_NOVO = 8;
 
+    static final String ESTADO_EDITOR_CODIGO_FONTE = "ESTADO_EDITOR_CODIGO_FONTE";
+    static final String ESTADO_EDITOR_LINHA = "ESTADO_EDITOR_LINHA";
+    static final String ESTADO_EDITOR_COLUNA = "ESTADO_EDITOR_COLUNA";
+
     private DrawerLayout drawerLayout;
     private Menu menuToolbarPrincipal;
     private NavigationView navigationView;
@@ -96,6 +100,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(viewPager);
+
+        // https://stackoverflow.com/a/36638144/1657502
+        // TODO Realmente necessário?
+        if (savedInstanceState != null) {
+            S.l(this, "\n\n!!! savedInstanceState != null\n\n");
+
+            String codigoFonte = savedInstanceState.getString(ESTADO_EDITOR_CODIGO_FONTE);
+            S.l(this, "codigoFonte:\n" + codigoFonte + "\n");
+            int linha = savedInstanceState.getInt(ESTADO_EDITOR_LINHA);
+            int coluna = savedInstanceState.getInt(ESTADO_EDITOR_COLUNA);
+            S.l(this, "linha: " + linha + ", coluna: " + coluna);
+        }
     }
 
     @Override
@@ -268,6 +284,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        // https://stackoverflow.com/a/36638144/1657502
+        // TODO Realmente necessário?
+        super.onSaveInstanceState(outState);
+        outState.putString(ESTADO_EDITOR_CODIGO_FONTE, getEditor().getCodigoFonte());
+        outState.putInt(ESTADO_EDITOR_LINHA, getEditor().getLinha());
+        outState.putInt(ESTADO_EDITOR_COLUNA, getEditor().getColuna());
+    }
+
     private void abrirArquivo() {
         S.l(this, "abrirArquivo()");
         if (temPermissaoParaEscreverArquivos()) {
@@ -336,10 +362,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         // Se desfazer é possível, então o arquivo foi modificado
         arquivoModificado = habilitarDesfazer;
         boolean habilitarRefazer = editor.isRefazerPossivel();
-        S.l(this, "aoModificarCodigoFonte() - habilitarDesfazer: " + habilitarDesfazer + ", habilitarRefazer: " + habilitarRefazer);
+        //S.l(this, "aoModificarCodigoFonte() - habilitarDesfazer: " + habilitarDesfazer + ", habilitarRefazer: " + habilitarRefazer);
 
         menuToolbarPrincipal.findItem(R.id.action_desfazer).setEnabled(habilitarDesfazer);
         menuToolbarPrincipal.findItem(R.id.action_refazer).setEnabled(habilitarRefazer);
+    }
+
+    @Override
+    public void aoMovimentarCursor(Editor editor) {
+        //S.l(this, "aoMovimentarCursor() - linha: " + editor.getLinha() + ", coluna: " + editor.getColuna());
     }
 
     private boolean arquivoNovo() {

@@ -47,9 +47,21 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        S.l(this, "onRestoreInstanceState()");
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         S.l(this, "onResume()");
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        S.l(this, "onSaveInstanceState()");
     }
 
     @Override

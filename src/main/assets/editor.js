@@ -19,10 +19,30 @@ function aoModificarCodigoFonte() {
     var codigoFonte = editor.getValue();
     var desfazerPossivel = editor.session.getUndoManager().hasUndo();
     var refazerPossivel = editor.session.getUndoManager().hasRedo();
-    window.javascriptInterface.aoModificarCodigoFonte(codigoFonte, desfazerPossivel, refazerPossivel);
+    if (window.javascriptInterface) {
+        window.javascriptInterface.aoModificarCodigoFonte(codigoFonte, desfazerPossivel, refazerPossivel);
+    } else {
+        // Depuração usando o navegador
+        console.log("aoModificarCodigoFonte(codigoFonte, desfazerPossivel: " + desfazerPossivel + ", refazerPossivel: " + refazerPossivel + ")");
+    }
+}
+
+function aoMovimentarCursor() {
+    // https://stackoverflow.com/a/38182500/1657502
+    var posicaoDoCursor = editor.getCursorPosition();
+    if (window.javascriptInterface) {
+        window.javascriptInterface.aoMovimentarCursor(posicaoDoCursor.row + 1, posicaoDoCursor.column + 1);
+    } else {
+        // Depuração usando o navegador
+        console.log("aoMovimentarCursor(" + (posicaoDoCursor.row + 1) + ", " + (posicaoDoCursor.column + 1) + ")");
+    }
 }
 
 editor.on('input', aoModificarCodigoFonte);
+
+editor.session.selection.on('changeCursor', aoMovimentarCursor);
+
+var intervaloDestacarLinhaComErro;
 
 function removerDestaqueLinhaComErro() {
     document.getElementsByClassName('ace_active-line')[0].classList.remove('linha_com_erro');
@@ -39,8 +59,6 @@ function aumentarFonte() {
 function desfazer() {
     editor.undo();
 }
-
-var intervaloDestacarLinhaComErro;
 
 function destacarLinhaComErro(linha, coluna) {
     posicionarCursor(linha, coluna);
@@ -61,7 +79,7 @@ function limparHistoricoDesfazerRefazer() {
 }
 
 function posicionarCursor(linha, coluna) {
-    editor.gotoLine(linha, coluna - 1, true);
+    editor.gotoLine(linha - 1, coluna - 1, true);
 }
 
 function refazer() {
