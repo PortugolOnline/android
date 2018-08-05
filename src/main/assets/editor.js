@@ -15,20 +15,14 @@ editor.setOptions({
 
 editor.setFontSize(tamanhoDaFonte);
 
-function aoEditarCodigo() {
-    atualizarCodigoFonte();
-    atualizarDesfazerRefazer();
+function aoModificarCodigoFonte() {
+    var codigoFonte = editor.getValue();
+    var desfazerPossivel = editor.session.getUndoManager().hasUndo();
+    var refazerPossivel = editor.session.getUndoManager().hasRedo();
+    window.javascriptInterface.aoModificarCodigoFonte(codigoFonte, desfazerPossivel, refazerPossivel);
 }
 
-editor.on('input', aoEditarCodigo);
-
-function atualizarCodigoFonte() {
-    window.javascriptInterface.atualizarCodigoFonte(editor.getValue());
-}
-
-function atualizarDesfazerRefazer() {
-    window.javascriptInterface.atualizarDesfazerRefazer(editor.session.getUndoManager().hasUndo(), editor.session.getUndoManager().hasRedo());
-}
+editor.on('input', aoModificarCodigoFonte);
 
 function removerDestaqueLinhaComErro() {
     document.getElementsByClassName('ace_active-line')[0].classList.remove('linha_com_erro');
@@ -44,7 +38,6 @@ function aumentarFonte() {
 
 function desfazer() {
     editor.undo();
-    atualizarDesfazerRefazer();
 }
 
 var intervaloDestacarLinhaComErro;
@@ -65,7 +58,6 @@ function diminuirFonte() {
 
 function limparHistoricoDesfazerRefazer() {
     editor.session.getUndoManager().reset();
-    atualizarDesfazerRefazer();
 }
 
 function posicionarCursor(linha, coluna) {
@@ -74,7 +66,6 @@ function posicionarCursor(linha, coluna) {
 
 function refazer() {
     editor.redo();
-    atualizarDesfazerRefazer();
 }
 
 function setCodigoFonte(codigoFonte) {

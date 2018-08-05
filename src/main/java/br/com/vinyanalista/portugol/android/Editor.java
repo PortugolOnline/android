@@ -1,7 +1,8 @@
 package br.com.vinyanalista.portugol.android;
 
-import android.util.Log;
-import android.webkit.*;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,23 +37,18 @@ public class Editor {
     }
 
     public void adicionarListener(EditorListener listener) {
+        assert (listener != null);
+
         listeners.add(listener);
     }
 
     @JavascriptInterface
-    public void atualizarCodigoFonte(String codigoFonte) {
+    public void aoModificarCodigoFonte(String codigoFonte, boolean desfazerPossivel, boolean refazerPossivel) {
         this.codigoFonte = codigoFonte;
-        for (EditorListener listener : listeners) {
-            listener.aoAtualizarCodigoFonte(this);
-        }
-    }
-
-    @JavascriptInterface
-    public void atualizarDesfazerRefazer(boolean desfazerPossivel, boolean refazerPossivel) {
         this.desfazerPossivel = desfazerPossivel;
         this.refazerPossivel = refazerPossivel;
         for (EditorListener listener : listeners) {
-            listener.aoAtualizarDesfazerRefazer(this);
+            listener.aoModificarCodigoFonte(this);
         }
     }
 
@@ -97,16 +93,16 @@ public class Editor {
     }
 
     public void removerListener(EditorListener listener) {
+        assert (listener != null);
+
         listeners.remove(listener);
     }
 
     public void setCodigoFonte(String codigoFonte) {
         assert (codigoFonte != null);
+
         this.codigoFonte = codigoFonte;
         codigoFonte = codigoFonte.replace("\n", "\\n");
         webView.evaluateJavascript("setCodigoFonte('" + codigoFonte + "')", null);
-        for (EditorListener listener : listeners) {
-            listener.aoAtualizarCodigoFonte(this);
-        }
     }
 }

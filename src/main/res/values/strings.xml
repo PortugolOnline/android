@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Portugol Online</string>
     <string name="action_aumentar_fonte">Aumentar fonte</string>
@@ -22,6 +23,12 @@
     <string name="nav_drawer_novo">Novo</string>
     <string name="nav_drawer_salvar">Salvar</string>
     <string name="nav_drawer_salvar_como">Salvar como</string>
+    <string name="nav_header_modificado">modificado</string>
+    <string name="salvar_descartar_dialogo_mensagem">O arquivo &lt;b>%1$s&lt;/b> foi modificado.\n\nDeseja salvar as alterações ou descartá-las?</string>
+    <string name="salvar_descartar_dialogo_titulo">Salvar ou descartar alterações</string>
+    <string name="salvar_descartar_dialogo_opcao_cancelar">Cancelar</string>
+    <string name="salvar_descartar_dialogo_opcao_descartar">Descartar</string>
+    <string name="salvar_descartar_dialogo_opcao_salvar">Salvar</string>
     <string name="sd_card">Cartão SD</string>
     <string name="vazia" />
 </resources>

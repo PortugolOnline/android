@@ -22,6 +22,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -34,21 +36,28 @@ import java.io.InputStreamReader;
 
 import br.com.vinyanalista.portugol.android.adapter.TabsAdapter;
 import br.com.vinyanalista.portugol.android.fragment.CompartilharFragment;
+import br.com.vinyanalista.portugol.android.fragment.SalvarDescartarFragment;
+import br.com.vinyanalista.portugol.android.util.S;
 
-public class AtividadePrincipal extends AtividadeBase implements NavigationView.OnNavigationItemSelectedListener, CompartilharFragment.CompartilharFragmentListener {
+public class AtividadePrincipal extends AtividadeBase implements NavigationView.OnNavigationItemSelectedListener, CompartilharFragment.CompartilharFragmentListener, EditorListener, SalvarDescartarFragment.SalvarDescartarFragmentListener {
     private static final String ARQUIVO_SEM_NOME = "Sem nome";
     private static final String NOME_DE_ARQUIVO_PADRAO = "algoritmo.por";
     static final int REQUEST_ABRIR_ARQUIVO = 1;
     static final int REQUEST_ABRIR_EXEMPLO = 2;
-    static final int REQUEST_SALVAR = 3;
-    static final int REQUEST_SALVAR_COMO = 4;
+    static final int REQUEST_NOVO = 3;
+    static final int REQUEST_SALVAR = 4;
+    static final int REQUEST_SALVAR_COMO = 5;
+    static final int REQUEST_SALVAR_COMO_E_ABRIR_ARQUIVO = 6;
+    static final int REQUEST_SALVAR_COMO_E_ABRIR_EXEMPLO = 7;
+    static final int REQUEST_SALVAR_COMO_E_NOVO = 8;
 
     private DrawerLayout drawerLayout;
     private Menu menuToolbarPrincipal;
-    private TextView tvNomeDoArquivo;
+    private NavigationView navigationView;
     private TabsAdapter tabsAdapter;
     private ViewPager viewPager;
 
+    private boolean arquivoModificado = false;
     private Uri caminhoDoArquivo = null;
     private String nomeDoArquivo = ARQUIVO_SEM_NOME;
 
@@ -62,15 +71,18 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
         // Navigation Drawer
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
-                R.string.nav_drawer_abrir, R.string.nav_drawer_fechar);
+                R.string.nav_drawer_abrir, R.string.nav_drawer_fechar) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                AtividadePrincipal.this.onDrawerOpened();
+            }
+        };
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        // https://stackoverflow.com/a/45520466/1657502
-        tvNomeDoArquivo = (TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_header_nome_do_arquivo);
 
         // ViewPager e TabLayout
         tabsAdapter = new TabsAdapter(getSupportFragmentManager(), this);
@@ -84,6 +96,7 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        S.l(this, "onActivityResult() - requestCode: " + requestCode + ", resultCode: " + resultCode);
         switch (requestCode) {
             case REQUEST_ABRIR_ARQUIVO:
                 // https://developer.android.com/guide/topics/providers/document-provider
@@ -99,11 +112,25 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
                 }
                 break;
             case REQUEST_SALVAR_COMO:
+            case REQUEST_SALVAR_COMO_E_ABRIR_ARQUIVO:
+            case REQUEST_SALVAR_COMO_E_ABRIR_EXEMPLO:
+            case REQUEST_SALVAR_COMO_E_NOVO:
                 // https://developer.android.com/guide/topics/providers/document-provider
                 if ((resultCode == RESULT_OK) && (data != null) && (data.getData() != null)) {
                     Uri caminhoDoArquivo = data.getData();
                     salvar(caminhoDoArquivo);
                 }
+                break;
+        }
+        switch (requestCode) {
+            case REQUEST_SALVAR_COMO_E_ABRIR_ARQUIVO:
+                abrirArquivo();
+                break;
+            case REQUEST_SALVAR_COMO_E_ABRIR_EXEMPLO:
+                abrirExemplo();
+                break;
+            case REQUEST_SALVAR_COMO_E_NOVO:
+                novo();
                 break;
         }
     }
@@ -124,21 +151,53 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
         return true;
     }
 
+    public void onDrawerOpened() {
+        S.l(this, "onDrawerOpened()");
+        // Esconde o teclado quando aparece o menu lateral
+        // https://stackoverflow.com/a/39088728/1657502
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+
+        // Atualiza o nome do arquivo e se foi modificado ou não
+        // https://stackoverflow.com/a/35952939/1657502
+        // https://stackoverflow.com/a/45520466/1657502
+        View headerView = navigationView.getHeaderView(0);
+
+        TextView tvNomeDoArquivo = (TextView) headerView.findViewById(R.id.nav_header_nome_do_arquivo);
+        tvNomeDoArquivo.setText(nomeDoArquivo);
+
+        TextView tvModificado = (TextView) headerView.findViewById(R.id.nav_header_modificado);
+        tvModificado.setText(arquivoModificado ? R.string.nav_header_modificado : R.string.vazia);
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        S.l(this, "onNavigationItemSelected()");
         if (drawerLayout != null) {
             switch (item.getItemId()) {
                 case R.id.nav_drawer_abrir_arquivo:
-                    abrirArquivo();
+                    if (arquivoModificado) {
+                        confirmarDescartarAlteracoes(REQUEST_ABRIR_ARQUIVO);
+                    } else {
+                        abrirArquivo();
+                    }
                     break;
                 case R.id.nav_drawer_abrir_exemplo:
-                    abrirExemplo();
+                    if (arquivoModificado) {
+                        confirmarDescartarAlteracoes(REQUEST_ABRIR_EXEMPLO);
+                    } else {
+                        abrirExemplo();
+                    }
                     break;
                 case R.id.nav_drawer_compartilhar:
                     compartilhar();
                     break;
                 case R.id.nav_drawer_novo:
-                    novo();
+                    if (arquivoModificado) {
+                        confirmarDescartarAlteracoes(REQUEST_NOVO);
+                    } else {
+                        novo();
+                    }
                     break;
                 case R.id.nav_drawer_salvar:
                     salvar();
@@ -179,6 +238,12 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        // TODO Implementar
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         // https://developer.android.com/training/permissions/requesting
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -199,15 +264,8 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (caminhoDoArquivo == null) {
-            novo();
-        }
-    }
-
     private void abrirArquivo() {
+        S.l(this, "abrirArquivo()");
         if (temPermissaoParaEscreverArquivos()) {
             // https://developer.android.com/guide/topics/providers/document-provider
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -220,6 +278,7 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
     }
 
     private void abrirArquivo(Uri caminhoDoArquivo) {
+        S.l(this, "abrirArquivo(caminhoDoArquivo: " + caminhoDoArquivo + ")");
         // https://developer.android.com/guide/topics/providers/document-provider
         Cursor cursor = getContentResolver().query(caminhoDoArquivo, null, null, null, null);
         if (cursor != null && cursor.moveToFirst()) {
@@ -232,13 +291,14 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
                     stringBuilder.append(line + "\n");
                 }
                 inputStream.close();
-
                 String codigoFonte = stringBuilder.toString();
-                setCodigoFonte(codigoFonte);
-                limparHistoricoDesfazerRefazer();
+
+                arquivoModificado = false;
                 this.caminhoDoArquivo = caminhoDoArquivo;
                 String displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                setNomeDoArquivo(displayName);
+                nomeDoArquivo = displayName;
+                setCodigoFonte(codigoFonte);
+                getEditor().limparHistoricoDesfazerRefazer();
             } catch (FileNotFoundException excecao) {
                 Snackbar.make(viewPager, "Erro: arquivo não encontrado", Snackbar.LENGTH_SHORT).show();
                 return;
@@ -252,19 +312,39 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
     }
 
     private void abrirExemplo() {
+        S.l(this, "abrirExemplo()");
         Intent intent = new Intent(getBaseContext(), AtividadeAbrirExemplo.class);
         startActivityForResult(intent, REQUEST_ABRIR_EXEMPLO);
     }
 
     private void abrirExemplo(String exemplo) {
-        setCodigoFonte(exemplo);
-        limparHistoricoDesfazerRefazer();
+        S.l(this, "abrirExemplo(exemplo)");
+        arquivoModificado = false;
         caminhoDoArquivo = null;
-        setNomeDoArquivo(ARQUIVO_SEM_NOME);
+        nomeDoArquivo = ARQUIVO_SEM_NOME;
+        setCodigoFonte(exemplo);
+        getEditor().limparHistoricoDesfazerRefazer();
+    }
+
+    @Override
+    public void aoModificarCodigoFonte(Editor editor) {
+        boolean habilitarDesfazer = editor.isDesfazerPossivel();
+        // Se desfazer é possível, então o arquivo foi modificado
+        arquivoModificado = habilitarDesfazer;
+        boolean habilitarRefazer = editor.isRefazerPossivel();
+        S.l(this, "aoModificarCodigoFonte() - habilitarDesfazer: " + habilitarDesfazer + ", habilitarRefazer: " + habilitarRefazer);
+
+        menuToolbarPrincipal.findItem(R.id.action_desfazer).setEnabled(habilitarDesfazer);
+        menuToolbarPrincipal.findItem(R.id.action_refazer).setEnabled(habilitarRefazer);
+    }
+
+    private boolean arquivoNovo() {
+        return (caminhoDoArquivo == null);
     }
 
     private void aumentarFonte() {
-        tabsAdapter.getEditorFragment().aumentarFonte();
+        S.l(this, "aumentarFonte()");
+        getEditor().aumentarFonte();
     }
 
     private void compartilhar() {
@@ -322,6 +402,16 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
         startActivity(Intent.createChooser(intentCompartilhar, getResources().getText(R.string.compartilhar_como_texto)));
     }
 
+    private void confirmarDescartarAlteracoes(int requestCode) {
+        S.l(this, "confirmarDescartarAlteracoes(requestCode: " + requestCode + ")");
+        Bundle argumentos = new Bundle();
+        argumentos.putInt(SalvarDescartarFragment.KEY_REQUEST_CODE, requestCode);
+        argumentos.putString(SalvarDescartarFragment.KEY_NOME_DO_ARQUIVO, nomeDoArquivo);
+        SalvarDescartarFragment dialogo = new SalvarDescartarFragment();
+        dialogo.setArguments(argumentos);
+        dialogo.show(getSupportFragmentManager(), "SalvarDescartarFragment");
+    }
+
     private void deletarRecursivamente(File arquivoOuPasta) {
         // https://stackoverflow.com/a/6425744/1657502
         if (arquivoOuPasta.isDirectory())
@@ -331,12 +421,30 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
         arquivoOuPasta.delete();
     }
 
+    @Override
+    public void descartarAlteracoes(int requestCode) {
+        S.l(this, "descartarAlteracoes(requestCode: " + requestCode + ")");
+        switch (requestCode) {
+            case REQUEST_ABRIR_ARQUIVO:
+                abrirArquivo();
+                break;
+            case REQUEST_ABRIR_EXEMPLO:
+                abrirExemplo();
+                break;
+            case REQUEST_NOVO:
+                novo();
+                break;
+        }
+    }
+
     private void desfazer() {
-        tabsAdapter.getEditorFragment().desfazer();
+        S.l(this, "desfazer()");
+        getEditor().desfazer();
     }
 
     private void diminuirFonte() {
-        tabsAdapter.getEditorFragment().diminuirFonte();
+        S.l(this, "diminuirFonte()");
+        getEditor().diminuirFonte();
     }
 
     private void executar() {
@@ -345,17 +453,12 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
     }
 
     private String getCodigoFonte() {
-        String codigoFonte = tabsAdapter.getEditorFragment().getCodigoFonte();
+        String codigoFonte = getEditor().getCodigoFonte();
         return codigoFonte;
     }
 
-    public void habilitarDesfazerRefazer(boolean habilitarDesfazer, boolean habilitarRefazer) {
-        menuToolbarPrincipal.findItem(R.id.action_desfazer).setEnabled(habilitarDesfazer);
-        menuToolbarPrincipal.findItem(R.id.action_refazer).setEnabled(habilitarRefazer);
-    }
-
-    private void limparHistoricoDesfazerRefazer() {
-        tabsAdapter.getEditorFragment().limparHistoricoDesfazerRefazer();
+    private Editor getEditor() {
+        return tabsAdapter.getEditorFragment().getEditor();
     }
 
     private void naoImplementadoAinda() {
@@ -363,24 +466,32 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
     }
 
     private void novo() {
-        if (caminhoDoArquivo != null) {
-            setCodigoFonte("");
-            limparHistoricoDesfazerRefazer();
-        }
+        S.l(this, "novo()");
+        arquivoModificado = false;
         caminhoDoArquivo = null;
-        setNomeDoArquivo(ARQUIVO_SEM_NOME);
+        nomeDoArquivo = ARQUIVO_SEM_NOME;
+        setCodigoFonte("");
+        getEditor().limparHistoricoDesfazerRefazer();
     }
 
     private void refazer() {
-        tabsAdapter.getEditorFragment().refazer();
+        S.l(this, "refazer()");
+        getEditor().refazer();
     }
 
     private void salvar() {
+        S.l(this, "salvar()");
         // Se o arquivo é novo, age como salvar como
-        salvar(caminhoDoArquivo == null);
+        salvar(arquivoNovo());
     }
 
     private void salvar(boolean selecionarArquivo) {
+        S.l(this, "salvar(selecionarArquivo: " + selecionarArquivo + ")");
+        salvar(selecionarArquivo, REQUEST_SALVAR_COMO);
+    }
+
+    private void salvar(boolean selecionarArquivo, int requestCode) {
+        S.l(this, "salvar(selecionarArquivo: " + selecionarArquivo + ", requestCode: " + requestCode + ")");
         if (temPermissaoParaEscreverArquivos()) {
             if (selecionarArquivo) {
                 // https://developer.android.com/guide/topics/providers/document-provider
@@ -388,7 +499,7 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("text/plain");
                 intent.putExtra(Intent.EXTRA_TITLE, NOME_DE_ARQUIVO_PADRAO);
-                startActivityForResult(intent, REQUEST_SALVAR_COMO);
+                startActivityForResult(intent, requestCode);
             } else {
                 salvar(caminhoDoArquivo);
             }
@@ -398,6 +509,7 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
     }
 
     private void salvar(Uri caminhoDoArquivo) {
+        S.l(this, "salvar(caminhoDoArquivo: " + caminhoDoArquivo + ")");
         // https://developer.android.com/guide/topics/providers/document-provider
         Cursor cursor = getContentResolver().query(caminhoDoArquivo, null, null, null, null);
         if (cursor != null && cursor.moveToFirst()) {
@@ -409,9 +521,11 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
                 fos.close();
                 pfd.close();
 
+                arquivoModificado = false;
                 this.caminhoDoArquivo = caminhoDoArquivo;
                 String displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                setNomeDoArquivo(displayName);
+                nomeDoArquivo = displayName;
+                getEditor().limparHistoricoDesfazerRefazer();
             } catch (FileNotFoundException excecao) {
                 Snackbar.make(viewPager, "Erro: arquivo não encontrado", Snackbar.LENGTH_SHORT).show();
                 return;
@@ -424,17 +538,44 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
         }
     }
 
+    @Override
+    public void salvarAlteracoes(int requestCode) {
+        S.l(this, "salvarAlteracoes(requestCode: " + requestCode + ")");
+        switch (requestCode) {
+            case REQUEST_ABRIR_ARQUIVO:
+                if (arquivoNovo()) {
+                    salvar(true, REQUEST_SALVAR_COMO_E_ABRIR_ARQUIVO);
+                } else {
+                    salvar(false);
+                    abrirArquivo();
+                }
+                break;
+            case REQUEST_ABRIR_EXEMPLO:
+                if (arquivoNovo()) {
+                    salvar(true, REQUEST_SALVAR_COMO_E_ABRIR_EXEMPLO);
+                } else {
+                    salvar(false);
+                    abrirExemplo();
+                }
+                break;
+            case REQUEST_NOVO:
+                if (arquivoNovo()) {
+                    salvar(true, REQUEST_SALVAR_COMO_E_NOVO);
+                } else {
+                    salvar(false);
+                    novo();
+                }
+                break;
+        }
+    }
+
     private void salvarComo() {
         salvar(true);
     }
 
     private void setCodigoFonte(String codigoFonte) {
-        tabsAdapter.getEditorFragment().setCodigoFonte(codigoFonte);
-    }
-
-    private void setNomeDoArquivo(String nomeDoArquivo) {
-        this.nomeDoArquivo = nomeDoArquivo;
-        tvNomeDoArquivo.setText(nomeDoArquivo);
+        S.l(this, "setCodigoFonte(codigoFonte)");
+        getEditor().setCodigoFonte(codigoFonte);
     }
 
     private void solicitarPermissaoParaEscreverArquivos(int requestCode) {
