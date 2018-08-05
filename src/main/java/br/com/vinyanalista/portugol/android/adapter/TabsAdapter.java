@@ -9,8 +9,8 @@ import android.text.SpannableString;
 import android.text.style.ImageSpan;
 import android.view.ViewGroup;
 
-import br.com.vinyanalista.portugol.android.AtividadePrincipal;
 import br.com.vinyanalista.portugol.android.R;
+import br.com.vinyanalista.portugol.android.activity.MainActivity;
 import br.com.vinyanalista.portugol.android.fragment.ConsoleFragment;
 import br.com.vinyanalista.portugol.android.fragment.EditorFragment;
 
@@ -22,13 +22,13 @@ public class TabsAdapter extends FragmentPagerAdapter {
     private final int ICONES_DAS_TABS[] = new int[]{R.drawable.ic_edit_black_48dp, R.drawable.ic_desktop_windows_black_48dp};
     private final String TITULOS_DAS_TABS[] = new String[]{"Editor", "Console"};
 
-    private AtividadePrincipal atividadePrincipal;
+    private MainActivity mainActivity;
     private ConsoleFragment consoleFragment;
     private EditorFragment editorFragment;
 
-    public TabsAdapter(FragmentManager fm, AtividadePrincipal atividadePrincipal) {
+    public TabsAdapter(FragmentManager fm, MainActivity mainActivity) {
         super(fm);
-        this.atividadePrincipal = atividadePrincipal;
+        this.mainActivity = mainActivity;
     }
 
     @Override
@@ -41,10 +41,10 @@ public class TabsAdapter extends FragmentPagerAdapter {
         Fragment fragment = null;
         switch (position) {
             case TAB_EDITOR:
-                fragment = EditorFragment.newInstance(atividadePrincipal);
+                fragment = EditorFragment.newInstance(mainActivity);
                 break;
             case TAB_CONSOLE:
-                fragment = ConsoleFragment.newInstance(atividadePrincipal);
+                fragment = ConsoleFragment.newInstance(mainActivity);
                 break;
         }
         return fragment;
@@ -52,7 +52,7 @@ public class TabsAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        Drawable icone = atividadePrincipal.getResources().getDrawable(ICONES_DAS_TABS[position]);
+        Drawable icone = mainActivity.getResources().getDrawable(ICONES_DAS_TABS[position]);
         icone.setBounds(0, 0, 24, 24);
         SpannableString sb = new SpannableString("   " + TITULOS_DAS_TABS[position]);
         ImageSpan is = new ImageSpan(icone, ImageSpan.ALIGN_BOTTOM);

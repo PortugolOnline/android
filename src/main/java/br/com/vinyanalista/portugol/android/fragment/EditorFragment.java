@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 
-import br.com.vinyanalista.portugol.android.Editor;
-import br.com.vinyanalista.portugol.android.EditorListener;
+import br.com.vinyanalista.portugol.android.editor.Editor;
+import br.com.vinyanalista.portugol.android.editor.EditorListener;
 import br.com.vinyanalista.portugol.android.R;
 
 public class EditorFragment extends BaseFragment {

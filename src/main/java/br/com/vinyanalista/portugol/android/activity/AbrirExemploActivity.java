@@ -1,4 +1,4 @@
-package br.com.vinyanalista.portugol.android;
+package br.com.vinyanalista.portugol.android.activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,9 +17,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.vinyanalista.portugol.android.R;
 import br.com.vinyanalista.portugol.interpretador.Exemplo;
 
-public class AtividadeAbrirExemplo extends AtividadeBase {
+public class AbrirExemploActivity extends BaseActivity {
     static final String EXTRA_EXEMPLO_SELECIONADO = "EXEMPLO_SELECIONADO";
 
     private Intent resultadoDaActivity;
@@ -27,7 +28,7 @@ public class AtividadeAbrirExemplo extends AtividadeBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.atividade_abrir_exemplo);
+        setContentView(R.layout.activity_abrir_exemplo);
 
         configurarToolbar();
         configurarBotaoDeVoltar();
@@ -52,7 +53,7 @@ public class AtividadeAbrirExemplo extends AtividadeBase {
                                     long rowId) {
                 Exemplo exemploSelecionado = Exemplo.values()[position];
                 resultadoDaActivity.putExtra(EXTRA_EXEMPLO_SELECIONADO, exemploSelecionado.getProgramaFonte());
-                AtividadeAbrirExemplo.this.setResult(RESULT_OK, resultadoDaActivity);
+                AbrirExemploActivity.this.setResult(RESULT_OK, resultadoDaActivity);
                 finish();
             }
         });

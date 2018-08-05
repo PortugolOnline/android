@@ -44,9 +44,16 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", applicationId + "-" + versionName)
 
-        def documentsAuthorityValue = "br.com.vinyanalista.portugol.documents"
-        manifestPlaceholders = [documentsAuthority: documentsAuthorityValue]
+        // https://developer.android.com/studio/build/gradle-tips#share-properties-with-the-manifest
+        def filesAuthorityValue = applicationId + ".files"
+        buildConfigField "String", "FILES_AUTHORITY", "\"${filesAuthorityValue}\""
+
+        def documentsAuthorityValue = applicationId + ".documents"
         buildConfigField "String", "DOCUMENTS_AUTHORITY", "\"${documentsAuthorityValue}\""
+
+        // https://stackoverflow.com/a/50860943/1657502
+        manifestPlaceholders = [documentsAuthority: documentsAuthorityValue,
+                                filesAuthority: filesAuthorityValue]
     }
     buildTypes {
         release {

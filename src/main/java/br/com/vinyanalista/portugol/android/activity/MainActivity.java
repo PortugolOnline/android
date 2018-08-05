@@ -1,4 +1,4 @@
-package br.com.vinyanalista.portugol.android;
+package br.com.vinyanalista.portugol.android.activity;
 
 import android.Manifest;
 import android.content.Intent;
@@ -34,12 +34,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import br.com.vinyanalista.portugol.android.BuildConfig;
+import br.com.vinyanalista.portugol.android.editor.Editor;
+import br.com.vinyanalista.portugol.android.editor.EditorListener;
+import br.com.vinyanalista.portugol.android.R;
 import br.com.vinyanalista.portugol.android.adapter.TabsAdapter;
 import br.com.vinyanalista.portugol.android.fragment.CompartilharFragment;
 import br.com.vinyanalista.portugol.android.fragment.SalvarDescartarFragment;
 import br.com.vinyanalista.portugol.android.util.S;
 
-public class AtividadePrincipal extends AtividadeBase implements NavigationView.OnNavigationItemSelectedListener, CompartilharFragment.CompartilharFragmentListener, EditorListener, SalvarDescartarFragment.SalvarDescartarFragmentListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, CompartilharFragment.CompartilharFragmentListener, EditorListener, SalvarDescartarFragment.SalvarDescartarFragmentListener {
     private static final String ARQUIVO_SEM_NOME = "Sem nome";
     private static final String NOME_DE_ARQUIVO_PADRAO = "algoritmo.por";
     static final int REQUEST_ABRIR_ARQUIVO = 1;
@@ -64,7 +68,7 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.atividade_principal);
+        setContentView(R.layout.activity_main);
 
         configurarToolbar();
 
@@ -75,7 +79,7 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                AtividadePrincipal.this.onDrawerOpened();
+                MainActivity.this.onDrawerOpened();
             }
         };
         drawerLayout.addDrawerListener(toggle);
@@ -107,7 +111,7 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
                 break;
             case REQUEST_ABRIR_EXEMPLO:
                 if (resultCode == RESULT_OK) {
-                    String exemplo = data.getStringExtra(AtividadeAbrirExemplo.EXTRA_EXEMPLO_SELECIONADO);
+                    String exemplo = data.getStringExtra(AbrirExemploActivity.EXTRA_EXEMPLO_SELECIONADO);
                     abrirExemplo(exemplo);
                 }
                 break;
@@ -313,7 +317,7 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
 
     private void abrirExemplo() {
         S.l(this, "abrirExemplo()");
-        Intent intent = new Intent(getBaseContext(), AtividadeAbrirExemplo.class);
+        Intent intent = new Intent(getBaseContext(), AbrirExemploActivity.class);
         startActivityForResult(intent, REQUEST_ABRIR_EXEMPLO);
     }
 
@@ -381,8 +385,9 @@ public class AtividadePrincipal extends AtividadeBase implements NavigationView.
             return;
         }
 
+        // https://developer.android.com/studio/build/gradle-tips#share-properties-with-the-manifest
         Uri compartilharUri = FileProvider.getUriForFile(this,
-                "br.com.vinyanalista.portugol.android.fileprovider", compartilharArquivo);
+                BuildConfig.FILES_AUTHORITY, compartilharArquivo);
 
         Intent intentCompartilhar = new Intent(Intent.ACTION_SEND);
         intentCompartilhar.setType("text/plain");

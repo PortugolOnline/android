@@ -1,4 +1,4 @@
-package br.com.vinyanalista.portugol.android;
+package br.com.vinyanalista.portugol.android.editor;
 
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
@@ -16,7 +16,6 @@ public class Editor {
     protected final List<EditorListener> listeners = new ArrayList<EditorListener>();
     private boolean refazerPossivel;
     protected WebView webView;
-
 
     public Editor(WebView webView) {
         assert (webView != null);

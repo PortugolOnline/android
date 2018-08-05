@@ -13,7 +13,7 @@
         android:theme="@style/TemaDoAplicativo">
 
         <activity
-            android:name=".AtividadePrincipal"
+            android:name=".activity.MainActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/TemaDoAplicativo.NavDrawer">
             <intent-filter>
@@ -23,14 +23,15 @@
         </activity>
 
         <activity
-            android:name=".AtividadeAbrirExemplo"
+            android:name=".activity.AbrirExemploActivity"
             android:label="@string/atividade_abrir_exemplo"
-            android:parentActivityName=".AtividadePrincipal"></activity>
+            android:parentActivityName=".activity.MainActivity"></activity>
 
         <!-- https://developer.android.com/training/secure-file-sharing/setup-sharing -->
+        <!-- https://developer.android.com/studio/build/gradle-tips#share-properties-with-the-manifest -->
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="br.com.vinyanalista.portugol.android.fileprovider"
+            android:authorities="${filesAuthority}"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

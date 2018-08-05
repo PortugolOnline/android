@@ -18,9 +18,9 @@ import android.widget.TextView;
 
 import java.io.IOException;
 
-import br.com.vinyanalista.portugol.android.AtividadePrincipal;
 import br.com.vinyanalista.portugol.android.BuildConfig;
 import br.com.vinyanalista.portugol.android.R;
+import br.com.vinyanalista.portugol.android.activity.MainActivity;
 import br.com.vinyanalista.portugol.base.lexer.LexerException;
 import br.com.vinyanalista.portugol.base.parser.ParserException;
 import br.com.vinyanalista.portugol.interpretador.Interpretador;
@@ -33,7 +33,7 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
     static final String CODIGO_FONTE = "CODIGO_FONTE";
     static final String TAG = "TESTE";
 
-    private AtividadePrincipal atividadePrincipal;
+    private MainActivity mainActivity;
 
     private TextView tvSaida;
     private ScrollView svSaida;
@@ -46,9 +46,9 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
     public ConsoleFragment() {
     }
 
-    public static ConsoleFragment newInstance(AtividadePrincipal atividadePrincipal) {
+    public static ConsoleFragment newInstance(MainActivity mainActivity) {
         ConsoleFragment fragment = new ConsoleFragment();
-        fragment.atividadePrincipal = atividadePrincipal;
+        fragment.mainActivity = mainActivity;
         return fragment;
     }
 
@@ -128,7 +128,7 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
             /*if (isEncerrado()) {
                 return;
             }*/
-            atividadePrincipal.runOnUiThread(new Runnable() {
+            mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     adicionarASaida(mensagemDeErro, Color.RED);
@@ -144,7 +144,7 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
             }
             super.encerrar();
 
-            atividadePrincipal.runOnUiThread(new Runnable() {
+            mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     btEntrar.setEnabled(false);
@@ -164,7 +164,7 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
         @Override
         protected void escrever(final String mensagem) {
             Log.d(TAG, "escrever(" + mensagem + ")");
-            atividadePrincipal.runOnUiThread(new Runnable() {
+            mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     adicionarASaida(mensagem, Color.BLACK);
@@ -175,7 +175,7 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
         @Override
         public void informacao(final String mensagemDeInformacao) {
             Log.d(TAG, "informacao(" + mensagemDeInformacao + ")");
-            atividadePrincipal.runOnUiThread(new Runnable() {
+            mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     adicionarASaida(mensagemDeInformacao, Color.BLUE);
@@ -186,7 +186,7 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
         @Override
         protected String ler() {
             Log.d(TAG, "ler()");
-            atividadePrincipal.runOnUiThread(new Runnable() {
+            mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     btEntrar.setEnabled(true);
@@ -203,7 +203,7 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
                 return null;
             }
             final String leitura = edEntrada.getText().toString();
-            atividadePrincipal.runOnUiThread(new Runnable() {
+            mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     btEntrar.setEnabled(false);
