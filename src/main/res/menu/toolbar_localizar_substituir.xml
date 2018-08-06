@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_localizar_substituir_anterior"
+        android:icon="@drawable/ic_arrow_upward_white_48dp"
+        android:title="@string/action_localizar_substituir_anterior"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_localizar_substituir_proximo"
+        android:icon="@drawable/ic_arrow_downward_white_48dp"
+        android:title="@string/action_localizar_substituir_proximo"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_localizar_substituir_substituir"
+        android:icon="@drawable/ic_refresh_white_48dp"
+        android:title="@string/action_localizar_substituir_substituir"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_localizar_substituir_substituir_tudo"
+        android:icon="@drawable/ic_refresh_white_48dp"
+        android:title="@string/action_localizar_substituir_substituir_tudo"
+        app:showAsAction="always" />
+</menu>

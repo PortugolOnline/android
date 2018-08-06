@@ -20,6 +20,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,15 +36,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import br.com.vinyanalista.portugol.android.BuildConfig;
+import br.com.vinyanalista.portugol.android.actionmode.ActionModeCallbackLocalizarSubstituir;
 import br.com.vinyanalista.portugol.android.editor.Editor;
 import br.com.vinyanalista.portugol.android.editor.EditorListener;
 import br.com.vinyanalista.portugol.android.R;
 import br.com.vinyanalista.portugol.android.adapter.TabsAdapter;
-import br.com.vinyanalista.portugol.android.fragment.CompartilharFragment;
-import br.com.vinyanalista.portugol.android.fragment.SalvarDescartarFragment;
+import br.com.vinyanalista.portugol.android.dialog.CompartilharFragment;
+import br.com.vinyanalista.portugol.android.dialog.LocalizarSubstituirFragment;
+import br.com.vinyanalista.portugol.android.dialog.SalvarDescartarFragment;
 import br.com.vinyanalista.portugol.android.util.S;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, CompartilharFragment.CompartilharFragmentListener, EditorListener, SalvarDescartarFragment.SalvarDescartarFragmentListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, CompartilharFragment.CompartilharFragmentListener, EditorListener, LocalizarSubstituirFragment.LocalizarSubstituirFragmentListener, SalvarDescartarFragment.SalvarDescartarFragmentListener {
     private static final String ARQUIVO_SEM_NOME = "Sem nome";
     private static final String NOME_DE_ARQUIVO_PADRAO = "algoritmo.por";
     static final int REQUEST_ABRIR_ARQUIVO = 1;
@@ -246,6 +249,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             case R.id.action_executar:
                 executar();
                 return true;
+            case R.id.action_localizar_substituir:
+                localizarSubstituir();
+                return true;
             case R.id.action_refazer:
                 refazer();
                 return true;
@@ -293,6 +299,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         outState.putInt(ESTADO_EDITOR_LINHA, getEditor().getLinha());
         outState.putInt(ESTADO_EDITOR_COLUNA, getEditor().getColuna());
     }
+
+    private ActionMode actionMode;
+    private ActionModeCallbackLocalizarSubstituir actionModeLocalizarSubstituir = new ActionModeCallbackLocalizarSubstituir() {
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            actionMode = null;
+        }
+    };
 
     private void abrirArquivo() {
         S.l(this, "abrirArquivo()");
@@ -497,6 +511,25 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return tabsAdapter.getEditorFragment().getEditor();
     }
 
+    @Override
+    public void localizar(String localizar, boolean diferenciar) {
+        S.l(this, "localizar() - localizar: \"" + localizar + "\", diferenciar: " + diferenciar);
+
+        if (actionMode != null) {
+            return;
+        }
+
+        actionModeLocalizarSubstituir.setSubstituir(false);
+        // https://stackoverflow.com/a/30032157/1657502
+        actionMode = startSupportActionMode(actionModeLocalizarSubstituir);
+    }
+
+    private void localizarSubstituir() {
+        S.l(this, "localizarSubstituir()");
+        LocalizarSubstituirFragment dialogo = new LocalizarSubstituirFragment();
+        dialogo.show(getSupportFragmentManager(), "LocalizarSubstituirFragment");
+    }
+
     private void naoImplementadoAinda() {
         Snackbar.make(viewPager, "Não implementado ainda...", Snackbar.LENGTH_SHORT).show();
     }
@@ -617,6 +650,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void solicitarPermissaoParaEscreverArquivos(int requestCode) {
         // https://developer.android.com/training/permissions/requesting
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
+    }
+
+    @Override
+    public void substituir(String localizar, boolean diferenciar, String substituirPor) {
+        S.l(this, "substituir() - localizar: \"" + localizar + "\", diferenciar: " + diferenciar + ", substituirPor: \"" + substituirPor + "\"");
+
+        if (actionMode != null) {
+            return;
+        }
+
+        actionModeLocalizarSubstituir.setSubstituir(true);
+        // https://stackoverflow.com/a/30032157/1657502
+        actionMode = startSupportActionMode(actionModeLocalizarSubstituir);
     }
 
     private boolean temPermissaoParaEscreverArquivos() {

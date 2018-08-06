@@ -1,4 +1,4 @@
-package br.com.vinyanalista.portugol.android.fragment;
+package br.com.vinyanalista.portugol.android.dialog;
 
 import android.app.Dialog;
 import android.content.Context;

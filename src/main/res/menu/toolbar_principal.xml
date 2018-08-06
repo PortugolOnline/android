@@ -22,6 +22,11 @@
         android:title="@string/action_refazer"
         app:showAsAction="always" />
     <item
+        android:id="@+id/action_localizar_substituir"
+        android:icon="@drawable/ic_find_replace_white_48dp"
+        android:title="@string/action_localizar_substituir"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_aumentar_fonte"
         android:icon="@drawable/ic_zoom_in_white_48dp"
         android:title="@string/action_aumentar_fonte"

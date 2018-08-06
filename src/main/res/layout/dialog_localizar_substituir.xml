@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <EditText
+        android:id="@+id/edit_text_localizar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/dialog_localizar_substituir_edit_text_localizar" />
+
+    <CheckBox
+        android:id="@+id/checkbox_diferenciar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/dialog_localizar_substituir_checkbox_diferenciar" />
+
+    <CheckBox
+        android:id="@+id/checkbox_substituir"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/dialog_localizar_substituir_checkbox_substituir" />
+
+    <EditText
+        android:id="@+id/edit_text_substituir_por"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/dialog_localizar_substituir_edit_text_substituir_por"
+        android:visibility="gone"/>
+
+</LinearLayout>

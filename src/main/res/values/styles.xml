@@ -5,6 +5,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <!-- https://stackoverflow.com/a/30032157/1657502 -->
+        <item name="windowActionModeOverlay">true</item>
     </style>
 
     <!-- Navigation Drawer -->
