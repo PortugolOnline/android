@@ -19,18 +19,18 @@ import android.widget.EditText;
 import br.com.vinyanalista.portugol.android.R;
 import br.com.vinyanalista.portugol.android.editor.ConfiguracoesDaPesquisa;
 
-public class LocalizarSubstituirFragment extends DialogFragment {
+public class LocalizarSubstituirDialog extends DialogFragment {
     public static final String ARGUMENTO_LOCALIZAR = "localizar";
     public static final String ARGUMENTO_DIFERENCIAR_MAIUSCULAS = "diferenciarMaiusculas";
     public static final String ARGUMENTO_SUBSTITUIR_POR = "substituirPor";
 
-    public interface LocalizarSubstituirFragmentListener {
+    public interface Listener {
         void localizar(String localizar, boolean diferenciarMaiusculas);
 
         void substituir(String localizar, boolean diferenciarMaiusculas, String substituirPor);
     }
 
-    private LocalizarSubstituirFragmentListener listener;
+    private Listener listener;
 
     private EditText edLocalizar, edSubstituirPor;
     private CheckBox cbDiferenciar, cbSubstituir;
@@ -39,10 +39,10 @@ public class LocalizarSubstituirFragment extends DialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            listener = (LocalizarSubstituirFragmentListener) context;
+            listener = (Listener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " deve implementar LocalizarSubstituirFragmentListener");
+                    + " deve implementar LocalizarSubstituirDialog.Listener");
         }
     }
 

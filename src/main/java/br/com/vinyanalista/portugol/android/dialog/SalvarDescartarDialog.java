@@ -11,26 +11,26 @@ import android.text.Html;
 
 import br.com.vinyanalista.portugol.android.R;
 
-public class SalvarDescartarFragment extends DialogFragment {
+public class SalvarDescartarDialog extends DialogFragment {
     public static final String ARGUMENTO_NOME_DO_ARQUIVO = "nomeDoArquivo";
     public static final String ARGUMENTO_REQUEST_CODE = "requestCode";
 
-    public interface SalvarDescartarFragmentListener {
+    public interface Listener {
         void descartarAlteracoes(int requestCode);
 
         void salvarAlteracoes(int requestCode);
     }
 
-    private SalvarDescartarFragmentListener listener;
+    private Listener listener;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            listener = (SalvarDescartarFragmentListener) context;
+            listener = (Listener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " deve implementar SalvarDescartarFragmentListener");
+                    + " deve implementar SalvarDescartarDialog.Listener");
         }
     }
 

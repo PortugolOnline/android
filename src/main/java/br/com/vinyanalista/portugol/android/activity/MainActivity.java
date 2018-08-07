@@ -43,12 +43,12 @@ import br.com.vinyanalista.portugol.android.editor.Editor;
 import br.com.vinyanalista.portugol.android.editor.EditorListener;
 import br.com.vinyanalista.portugol.android.R;
 import br.com.vinyanalista.portugol.android.adapter.TabsAdapter;
-import br.com.vinyanalista.portugol.android.dialog.CompartilharFragment;
-import br.com.vinyanalista.portugol.android.dialog.LocalizarSubstituirFragment;
-import br.com.vinyanalista.portugol.android.dialog.SalvarDescartarFragment;
+import br.com.vinyanalista.portugol.android.dialog.CompartilharDialog;
+import br.com.vinyanalista.portugol.android.dialog.LocalizarSubstituirDialog;
+import br.com.vinyanalista.portugol.android.dialog.SalvarDescartarDialog;
 import br.com.vinyanalista.portugol.android.util.S;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, CompartilharFragment.CompartilharFragmentListener, EditorListener, LocalizarSubstituirFragment.LocalizarSubstituirFragmentListener, SalvarDescartarFragment.SalvarDescartarFragmentListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, CompartilharDialog.Listener, EditorListener, LocalizarSubstituirDialog.Listener, SalvarDescartarDialog.Listener {
     private static final String ARQUIVO_SEM_NOME = "Sem nome";
     private static final String NOME_DE_ARQUIVO_PADRAO = "algoritmo.por";
     static final int REQUEST_ABRIR_ARQUIVO = 1;
@@ -442,8 +442,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void compartilhar() {
-        CompartilharFragment compartilhar = new CompartilharFragment();
-        compartilhar.show(getSupportFragmentManager(), "CompartilharFragment");
+        CompartilharDialog compartilhar = new CompartilharDialog();
+        compartilhar.show(getSupportFragmentManager(), CompartilharDialog.class.getSimpleName());
     }
 
     @Override
@@ -500,11 +500,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void confirmarDescartarAlteracoes(int requestCode) {
         S.l(this, "confirmarDescartarAlteracoes(requestCode: " + requestCode + ")");
         Bundle argumentos = new Bundle();
-        argumentos.putInt(SalvarDescartarFragment.ARGUMENTO_REQUEST_CODE, requestCode);
-        argumentos.putString(SalvarDescartarFragment.ARGUMENTO_NOME_DO_ARQUIVO, nomeDoArquivo);
-        SalvarDescartarFragment dialogo = new SalvarDescartarFragment();
+        argumentos.putInt(SalvarDescartarDialog.ARGUMENTO_REQUEST_CODE, requestCode);
+        argumentos.putString(SalvarDescartarDialog.ARGUMENTO_NOME_DO_ARQUIVO, nomeDoArquivo);
+        SalvarDescartarDialog dialogo = new SalvarDescartarDialog();
         dialogo.setArguments(argumentos);
-        dialogo.show(getSupportFragmentManager(), "SalvarDescartarFragment");
+        dialogo.show(getSupportFragmentManager(), SalvarDescartarDialog.class.getSimpleName());
     }
 
     private void deletarRecursivamente(File arquivoOuPasta) {
@@ -589,17 +589,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void localizarSubstituir() {
         S.l(this, "localizarSubstituir()");
-        LocalizarSubstituirFragment dialogo = new LocalizarSubstituirFragment();
+        LocalizarSubstituirDialog dialogo = new LocalizarSubstituirDialog();
 
         if (getEditor().getConfiguracoesDaPesquisa() != null) {
             Bundle argumentos = new Bundle();
-            argumentos.putString(LocalizarSubstituirFragment.ARGUMENTO_LOCALIZAR, getEditor().getConfiguracoesDaPesquisa().getLocalizar());
-            argumentos.putBoolean(LocalizarSubstituirFragment.ARGUMENTO_DIFERENCIAR_MAIUSCULAS, getEditor().getConfiguracoesDaPesquisa().isDiferenciarMaiusculas());
-            argumentos.putString(LocalizarSubstituirFragment.ARGUMENTO_SUBSTITUIR_POR, getEditor().getConfiguracoesDaPesquisa().getSubstituirPor());
+            argumentos.putString(LocalizarSubstituirDialog.ARGUMENTO_LOCALIZAR, getEditor().getConfiguracoesDaPesquisa().getLocalizar());
+            argumentos.putBoolean(LocalizarSubstituirDialog.ARGUMENTO_DIFERENCIAR_MAIUSCULAS, getEditor().getConfiguracoesDaPesquisa().isDiferenciarMaiusculas());
+            argumentos.putString(LocalizarSubstituirDialog.ARGUMENTO_SUBSTITUIR_POR, getEditor().getConfiguracoesDaPesquisa().getSubstituirPor());
             dialogo.setArguments(argumentos);
         }
 
-        dialogo.show(getSupportFragmentManager(), "LocalizarSubstituirFragment");
+        dialogo.show(getSupportFragmentManager(), LocalizarSubstituirDialog.class.getSimpleName());
     }
 
     private void naoImplementadoAinda() {

@@ -13,12 +13,12 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/action_localizar_substituir_substituir"
-        android:icon="@drawable/ic_refresh_white_48dp"
+        android:icon="@drawable/ic_substituir_white_48dp"
         android:title="@string/action_localizar_substituir_substituir"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_localizar_substituir_substituir_tudo"
-        android:icon="@drawable/ic_refresh_white_48dp"
+        android:icon="@drawable/ic_substituir_tudo_white_48dp"
         android:title="@string/action_localizar_substituir_substituir_tudo"
         app:showAsAction="always" />
 </menu>

@@ -10,25 +10,25 @@ import android.support.v7.app.AlertDialog;
 
 import br.com.vinyanalista.portugol.android.R;
 
-public class CompartilharFragment extends DialogFragment {
+public class CompartilharDialog extends DialogFragment {
     // https://developer.android.com/guide/topics/ui/dialogs
 
-    public interface CompartilharFragmentListener {
+    public interface Listener {
         void compartilharComoArquivo();
 
         void compartilharComoTexto();
     }
 
-    private CompartilharFragmentListener listener;
+    private Listener listener;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            listener = (CompartilharFragmentListener) context;
+            listener = (Listener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " deve implementar CompartilharFragmentListener");
+                    + " deve implementar CompartilharDialog.Listener");
         }
     }
 
