@@ -27,7 +27,6 @@
         android:id="@+id/edit_text_substituir_por"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/dialog_localizar_substituir_edit_text_substituir_por"
-        android:visibility="gone"/>
+        android:hint="@string/dialog_localizar_substituir_edit_text_substituir_por" />
 
 </LinearLayout>

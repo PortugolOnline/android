@@ -21,7 +21,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.view.ActionMode;
+import android.text.Html;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -36,7 +38,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import br.com.vinyanalista.portugol.android.BuildConfig;
-import br.com.vinyanalista.portugol.android.actionmode.ActionModeCallbackLocalizarSubstituir;
+import br.com.vinyanalista.portugol.android.editor.ConfiguracoesDaPesquisa;
 import br.com.vinyanalista.portugol.android.editor.Editor;
 import br.com.vinyanalista.portugol.android.editor.EditorListener;
 import br.com.vinyanalista.portugol.android.R;
@@ -62,6 +64,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     static final String ESTADO_EDITOR_LINHA = "ESTADO_EDITOR_LINHA";
     static final String ESTADO_EDITOR_COLUNA = "ESTADO_EDITOR_COLUNA";
 
+    private ActionMode actionMode;
     private DrawerLayout drawerLayout;
     private Menu menuToolbarPrincipal;
     private NavigationView navigationView;
@@ -71,6 +74,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private boolean arquivoModificado = false;
     private Uri caminhoDoArquivo = null;
     private String nomeDoArquivo = ARQUIVO_SEM_NOME;
+    private boolean substituir = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -300,11 +304,45 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         outState.putInt(ESTADO_EDITOR_COLUNA, getEditor().getColuna());
     }
 
-    private ActionMode actionMode;
-    private ActionModeCallbackLocalizarSubstituir actionModeLocalizarSubstituir = new ActionModeCallbackLocalizarSubstituir() {
+    private ActionMode.Callback actionModeLocalizarSubstituir = new ActionMode.Callback() {
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            S.l(this, "onActionItemClicked()");
+            switch (item.getItemId()) {
+                case R.id.action_localizar_substituir_anterior:
+                    localizarAnterior();
+                    return true;
+                case R.id.action_localizar_substituir_proximo:
+                    localizarProximo();
+                    return true;
+                case R.id.action_localizar_substituir_substituir:
+                    substituir();
+                    return true;
+                case R.id.action_localizar_substituir_substituir_tudo:
+                    substituirTudo();
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.toolbar_localizar_substituir, menu);
+            menu.findItem(R.id.action_localizar_substituir_substituir).setVisible(substituir);
+            menu.findItem(R.id.action_localizar_substituir_substituir_tudo).setVisible(substituir);
+            return true;
+        }
+
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             actionMode = null;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
         }
     };
 
@@ -387,6 +425,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //S.l(this, "aoMovimentarCursor() - linha: " + editor.getLinha() + ", coluna: " + editor.getColuna());
     }
 
+    @Override
+    public void aoNaoEncontrar(String localizar) {
+        String mensagem = getResources().getString(R.string.ao_nao_encontrar, localizar);
+        CharSequence mensagemComFormatacao = Html.fromHtml(mensagem);
+        Snackbar.make(viewPager, mensagemComFormatacao, Snackbar.LENGTH_SHORT).show();
+    }
+
     private boolean arquivoNovo() {
         return (caminhoDoArquivo == null);
     }
@@ -455,8 +500,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void confirmarDescartarAlteracoes(int requestCode) {
         S.l(this, "confirmarDescartarAlteracoes(requestCode: " + requestCode + ")");
         Bundle argumentos = new Bundle();
-        argumentos.putInt(SalvarDescartarFragment.KEY_REQUEST_CODE, requestCode);
-        argumentos.putString(SalvarDescartarFragment.KEY_NOME_DO_ARQUIVO, nomeDoArquivo);
+        argumentos.putInt(SalvarDescartarFragment.ARGUMENTO_REQUEST_CODE, requestCode);
+        argumentos.putString(SalvarDescartarFragment.ARGUMENTO_NOME_DO_ARQUIVO, nomeDoArquivo);
         SalvarDescartarFragment dialogo = new SalvarDescartarFragment();
         dialogo.setArguments(argumentos);
         dialogo.show(getSupportFragmentManager(), "SalvarDescartarFragment");
@@ -512,21 +557,48 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    public void localizar(String localizar, boolean diferenciar) {
-        S.l(this, "localizar() - localizar: \"" + localizar + "\", diferenciar: " + diferenciar);
+    public void localizar(String localizar, boolean diferenciarMaiusculas) {
+        S.l(this, "localizar() - localizar: \"" + localizar + "\", diferenciarMaiusculas: " + diferenciarMaiusculas);
 
         if (actionMode != null) {
             return;
         }
 
-        actionModeLocalizarSubstituir.setSubstituir(false);
+        getEditor().setConfiguracoesDaPesquisa(new ConfiguracoesDaPesquisa(localizar, diferenciarMaiusculas));
+
+        // Teste de sanidade
+        if (!getCodigoFonte().contains(localizar)) {
+            aoNaoEncontrar(localizar);
+            return;
+        }
+
+        getEditor().localizarProximo();
+
+        substituir = false;
         // https://stackoverflow.com/a/30032157/1657502
         actionMode = startSupportActionMode(actionModeLocalizarSubstituir);
+    }
+
+    private void localizarAnterior() {
+        getEditor().localizarAnterior();
+    }
+
+    private void localizarProximo() {
+        getEditor().localizarProximo();
     }
 
     private void localizarSubstituir() {
         S.l(this, "localizarSubstituir()");
         LocalizarSubstituirFragment dialogo = new LocalizarSubstituirFragment();
+
+        if (getEditor().getConfiguracoesDaPesquisa() != null) {
+            Bundle argumentos = new Bundle();
+            argumentos.putString(LocalizarSubstituirFragment.ARGUMENTO_LOCALIZAR, getEditor().getConfiguracoesDaPesquisa().getLocalizar());
+            argumentos.putBoolean(LocalizarSubstituirFragment.ARGUMENTO_DIFERENCIAR_MAIUSCULAS, getEditor().getConfiguracoesDaPesquisa().isDiferenciarMaiusculas());
+            argumentos.putString(LocalizarSubstituirFragment.ARGUMENTO_SUBSTITUIR_POR, getEditor().getConfiguracoesDaPesquisa().getSubstituirPor());
+            dialogo.setArguments(argumentos);
+        }
+
         dialogo.show(getSupportFragmentManager(), "LocalizarSubstituirFragment");
     }
 
@@ -652,17 +724,38 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
     }
 
+    private void substituir() {
+        getEditor().substituir();
+    }
+
     @Override
-    public void substituir(String localizar, boolean diferenciar, String substituirPor) {
-        S.l(this, "substituir() - localizar: \"" + localizar + "\", diferenciar: " + diferenciar + ", substituirPor: \"" + substituirPor + "\"");
+    public void substituir(String localizar, boolean diferenciarMaiusculas, String substituirPor) {
+        S.l(this, "substituir() - localizar: \"" + localizar + "\", diferenciarMaiusculas: " + diferenciarMaiusculas + ", substituirPor: \"" + substituirPor + "\"");
 
         if (actionMode != null) {
             return;
         }
 
-        actionModeLocalizarSubstituir.setSubstituir(true);
+        getEditor().setConfiguracoesDaPesquisa(new ConfiguracoesDaPesquisa(localizar, diferenciarMaiusculas, substituirPor));
+
+        // Teste de sanidade
+        if (!getCodigoFonte().contains(localizar)) {
+            aoNaoEncontrar(localizar);
+            return;
+        }
+
+        getEditor().localizarProximo();
+
+        substituir = true;
         // https://stackoverflow.com/a/30032157/1657502
         actionMode = startSupportActionMode(actionModeLocalizarSubstituir);
+    }
+
+    private void substituirTudo() {
+        getEditor().substituirTudo();
+        if (actionMode != null) {
+            actionMode.finish();
+        }
     }
 
     private boolean temPermissaoParaEscreverArquivos() {

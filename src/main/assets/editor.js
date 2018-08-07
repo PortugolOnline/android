@@ -33,8 +33,15 @@ function aoMovimentarCursor() {
     if (window.javascriptInterface) {
         window.javascriptInterface.aoMovimentarCursor(posicaoDoCursor.row + 1, posicaoDoCursor.column + 1);
     } else {
-        // Depuração usando o navegador
-        console.log("aoMovimentarCursor(" + (posicaoDoCursor.row + 1) + ", " + (posicaoDoCursor.column + 1) + ")");
+        console.log("aoMovimentarCursor(linha: " + (posicaoDoCursor.row + 1) + ", coluna: " + (posicaoDoCursor.column + 1) + ")");
+    }
+}
+
+function aoNaoEncontrar() {
+    if (window.javascriptInterface) {
+        window.javascriptInterface.aoNaoEncontrar(configuracoesDaPesquisa.localizar);
+    } else {
+        console.log("aoNaoEncontrar(localizar: " + configuracoesDaPesquisa.localizar + ")");
     }
 }
 
@@ -44,10 +51,25 @@ editor.session.selection.on('changeCursor', aoMovimentarCursor);
 
 var intervaloDestacarLinhaComErro;
 
+function localizar(proximo) {
+    var range = editor.find(configuracoesDaPesquisa.localizar, {
+        backwards: !proximo,
+        caseSensitive: configuracoesDaPesquisa.diferenciarMaiusculas,
+        wrap: true
+    });
+    if (!range) {
+        aoNaoEncontrar();
+    }
+}
+
 function removerDestaqueLinhaComErro() {
     document.getElementsByClassName('ace_active-line')[0].classList.remove('linha_com_erro');
     editor.selection.removeListener('changeCursor', removerDestaqueLinhaComErro);
+    editor.selection.on('changeCursor', aoMovimentarCursor);
+    aoMovimentarCursor();
 }
+
+var configuracoesDaPesquisa = {};
 
 /* Funções para uso externo */
 
@@ -60,8 +82,15 @@ function desfazer() {
     editor.undo();
 }
 
+function configurarPesquisa(localizar, diferenciarMaiusculas, substituirPor) {
+    configuracoesDaPesquisa.localizar = localizar;
+    configuracoesDaPesquisa.diferenciarMaiusculas = diferenciarMaiusculas;
+    configuracoesDaPesquisa.substituirPor = substituirPor;
+}
+
 function destacarLinhaComErro(linha, coluna) {
-    posicionarCursor(linha, coluna);
+    editor.selection.removeListener('changeCursor', aoMovimentarCursor);
+    posicionarCursor(linha + 1, coluna + 1);
     intervaloDestacarLinhaComErro = setInterval(function() {
         document.getElementsByClassName('ace_active-line')[0].classList.add('linha_com_erro');
         editor.selection.on('changeCursor', removerDestaqueLinhaComErro);
@@ -78,6 +107,14 @@ function limparHistoricoDesfazerRefazer() {
     editor.session.getUndoManager().reset();
 }
 
+function localizarAnterior() {
+    localizar(false);
+}
+
+function localizarProximo() {
+    localizar(true);
+}
+
 function posicionarCursor(linha, coluna) {
     editor.gotoLine(linha - 1, coluna - 1, true);
 }
@@ -88,4 +125,17 @@ function refazer() {
 
 function setCodigoFonte(codigoFonte) {
     editor.setValue(codigoFonte, -1);
+}
+
+function substituir() {
+    if (editor.replace(configuracoesDaPesquisa.substituirPor) < 1) {
+        aoNaoEncontrar();
+    };
+    localizarProximo();
+}
+
+function substituirTudo() {
+    if (editor.replaceAll(configuracoesDaPesquisa.substituirPor) < 1) {
+        aoNaoEncontrar();
+    }
 }

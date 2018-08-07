@@ -13,6 +13,7 @@
     <string name="action_localizar_substituir_substituir">Substituir</string>
     <string name="action_localizar_substituir_substituir_tudo">Substituir tudo</string>
     <string name="action_salvar">Salvar</string>
+    <string name="ao_nao_encontrar">Sua pesquisa &lt;b>%1$s&lt;/b> não foi encontrada.</string>
     <string name="armazenamento_interno">Armazenamento interno</string>
     <string name="atividade_abrir_exemplo">Abrir exemplo</string>
     <string name="dialog_localizar_substituir_button_cancelar">Cancelar</string>

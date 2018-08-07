@@ -12,6 +12,7 @@ public class Editor {
     protected final static String CODIFICACAO = "UTF-8";
 
     private String codigoFonte;
+    private ConfiguracoesDaPesquisa configuracoesDaPesquisa;
     private int coluna;
     private boolean desfazerPossivel;
     private int linha;
@@ -23,6 +24,7 @@ public class Editor {
         assert (webView != null);
 
         codigoFonte = "";
+        configuracoesDaPesquisa = null;
         desfazerPossivel = false;
         refazerPossivel = false;
         this.webView = webView;
@@ -62,8 +64,19 @@ public class Editor {
         }
     }
 
+    @JavascriptInterface
+    public void aoNaoEncontrar(String localizar) {
+        for (EditorListener listener : listeners) {
+            listener.aoNaoEncontrar(localizar);
+        }
+    }
+
     public void aumentarFonte() {
         webView.evaluateJavascript("aumentarFonte()", null);
+    }
+
+    private void configurarPesquisa(String localizar, boolean diferenciarMaiusculas, String substituirPor) {
+        webView.evaluateJavascript("configurarPesquisa(\"" + localizar + "\", " + diferenciarMaiusculas + ", " + (substituirPor == null ? "null" : "\"" + substituirPor + "\"") + ")", null);
     }
 
     public void desfazer() {
@@ -86,6 +99,10 @@ public class Editor {
         return coluna;
     }
 
+    public ConfiguracoesDaPesquisa getConfiguracoesDaPesquisa() {
+        return configuracoesDaPesquisa;
+    }
+
     public int getLinha() {
         return linha;
     }
@@ -100,6 +117,14 @@ public class Editor {
 
     public void limparHistoricoDesfazerRefazer() {
         webView.evaluateJavascript("limparHistoricoDesfazerRefazer()", null);
+    }
+
+    public void localizarAnterior() {
+        webView.evaluateJavascript("localizarAnterior()", null);
+    }
+
+    public void localizarProximo() {
+        webView.evaluateJavascript("localizarProximo()", null);
     }
 
     public void posicionarCursor(int linha, int coluna) {
@@ -122,5 +147,18 @@ public class Editor {
         this.codigoFonte = codigoFonte;
         codigoFonte = codigoFonte.replace("\n", "\\n");
         webView.evaluateJavascript("setCodigoFonte('" + codigoFonte + "')", null);
+    }
+
+    public void setConfiguracoesDaPesquisa(ConfiguracoesDaPesquisa configuracoesDaPesquisa) {
+        this.configuracoesDaPesquisa = configuracoesDaPesquisa;
+        configurarPesquisa(configuracoesDaPesquisa.getLocalizar(), configuracoesDaPesquisa.isDiferenciarMaiusculas(), configuracoesDaPesquisa.getSubstituirPor());
+    }
+
+    public void substituir() {
+        webView.evaluateJavascript("substituir()", null);
+    }
+
+    public void substituirTudo() {
+        webView.evaluateJavascript("substituirTudo()", null);
     }
 }

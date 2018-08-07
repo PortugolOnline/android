@@ -4,4 +4,6 @@ public interface EditorListener {
     void aoModificarCodigoFonte(Editor editor);
 
     void aoMovimentarCursor(Editor editor);
+
+    void aoNaoEncontrar(String localizar);
 }

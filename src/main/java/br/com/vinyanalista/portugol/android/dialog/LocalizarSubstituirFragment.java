@@ -12,16 +12,22 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
 import br.com.vinyanalista.portugol.android.R;
+import br.com.vinyanalista.portugol.android.editor.ConfiguracoesDaPesquisa;
 
 public class LocalizarSubstituirFragment extends DialogFragment {
-    public interface LocalizarSubstituirFragmentListener {
-        void localizar(String localizar, boolean diferenciar);
+    public static final String ARGUMENTO_LOCALIZAR = "localizar";
+    public static final String ARGUMENTO_DIFERENCIAR_MAIUSCULAS = "diferenciarMaiusculas";
+    public static final String ARGUMENTO_SUBSTITUIR_POR = "substituirPor";
 
-        void substituir(String localizar, boolean diferenciar, String substituirPor);
+    public interface LocalizarSubstituirFragmentListener {
+        void localizar(String localizar, boolean diferenciarMaiusculas);
+
+        void substituir(String localizar, boolean diferenciarMaiusculas, String substituirPor);
     }
 
     private LocalizarSubstituirFragmentListener listener;
@@ -43,28 +49,43 @@ public class LocalizarSubstituirFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        ConfiguracoesDaPesquisa configuracoesDaPesquisa;
+
+        if (getArguments() == null) {
+            configuracoesDaPesquisa = new ConfiguracoesDaPesquisa();
+        } else {
+            configuracoesDaPesquisa = new ConfiguracoesDaPesquisa(
+                    getArguments().getString(ARGUMENTO_LOCALIZAR),
+                    getArguments().getBoolean(ARGUMENTO_DIFERENCIAR_MAIUSCULAS),
+                    getArguments().getString(ARGUMENTO_SUBSTITUIR_POR)
+            );
+        }
+
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_localizar_substituir, null);
 
         edLocalizar = (EditText) view.findViewById(R.id.edit_text_localizar);
-        edSubstituirPor = (EditText) view.findViewById(R.id.edit_text_substituir_por);
-        cbDiferenciar = (CheckBox) view.findViewById(R.id.checkbox_diferenciar);
-        cbSubstituir = (CheckBox) view.findViewById(R.id.checkbox_substituir);
+        edLocalizar.setText(configuracoesDaPesquisa.getLocalizar());
 
-        cbSubstituir.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                boolean marcado = ((CheckBox) view).isChecked();
-                edSubstituirPor.setVisibility(marcado ? View.VISIBLE : View.GONE);
-            }
-        });
+        edSubstituirPor = (EditText) view.findViewById(R.id.edit_text_substituir_por);
+        edSubstituirPor.setText(configuracoesDaPesquisa.getSubstituirPor());
+
+        cbDiferenciar = (CheckBox) view.findViewById(R.id.checkbox_diferenciar);
+        cbDiferenciar.setChecked(configuracoesDaPesquisa.isDiferenciarMaiusculas());
+
+        cbSubstituir = (CheckBox) view.findViewById(R.id.checkbox_substituir);
+        cbSubstituir.setChecked(configuracoesDaPesquisa.getSubstituirPor() != null);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(view)
                 .setPositiveButton(R.string.dialog_localizar_substituir_button_localizar, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        // Localizar
+                        // Esconde o teclado
+                        // https://stackoverflow.com/a/5106399/1657502
+                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(edLocalizar.getWindowToken(), 0);
+
                         if (cbSubstituir.isChecked()) {
                             listener.substituir(edLocalizar.getText().toString(), cbDiferenciar.isChecked(), edSubstituirPor.getText().toString());
                         } else {
@@ -78,8 +99,6 @@ public class LocalizarSubstituirFragment extends DialogFragment {
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-
                 edLocalizar.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -97,6 +116,27 @@ public class LocalizarSubstituirFragment extends DialogFragment {
                         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(!TextUtils.isEmpty(editable));
                     }
                 });
+
+                cbSubstituir.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        boolean marcado = ((CheckBox) view).isChecked();
+                        edSubstituirPor.setVisibility(marcado ? View.VISIBLE : View.GONE);
+                    }
+                });
+
+                edSubstituirPor.setVisibility(cbSubstituir.isChecked() ? View.VISIBLE : View.GONE);
+
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(!TextUtils.isEmpty(edLocalizar.getEditableText()));
+
+                // Foca no campo Localizar e mostra o teclado
+                // https://stackoverflow.com/a/5106399/1657502
+                edLocalizar.requestFocus();
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(edLocalizar, InputMethodManager.SHOW_IMPLICIT);
+                // Move o cursor para o final do campo
+                // https://stackoverflow.com/a/44428987/1657502
+                edLocalizar.setSelection(edLocalizar.getText().length());
             }
         });
 

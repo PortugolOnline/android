@@ -12,8 +12,8 @@ import android.text.Html;
 import br.com.vinyanalista.portugol.android.R;
 
 public class SalvarDescartarFragment extends DialogFragment {
-    public static final String KEY_NOME_DO_ARQUIVO = "nomeDoArquivo";
-    public static final String KEY_REQUEST_CODE = "requestCode";
+    public static final String ARGUMENTO_NOME_DO_ARQUIVO = "nomeDoArquivo";
+    public static final String ARGUMENTO_REQUEST_CODE = "requestCode";
 
     public interface SalvarDescartarFragmentListener {
         void descartarAlteracoes(int requestCode);
@@ -37,13 +37,13 @@ public class SalvarDescartarFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        String nomeDoArquivo = getArguments().getString(KEY_NOME_DO_ARQUIVO);
+        String nomeDoArquivo = getArguments().getString(ARGUMENTO_NOME_DO_ARQUIVO);
         // https://stackoverflow.com/a/20887690/1657502
         // https://stackoverflow.com/a/13425284/1657502
         // http://developer.android.com/guide/topics/resources/string-resource.html#FormattingAndStyling
         String mensagem = getResources().getString(R.string.salvar_descartar_dialogo_mensagem, nomeDoArquivo);
         CharSequence mensagemComFormatacao = Html.fromHtml(mensagem);
-        final int requestCode = getArguments().getInt(KEY_REQUEST_CODE);
+        final int requestCode = getArguments().getInt(ARGUMENTO_REQUEST_CODE);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.salvar_descartar_dialogo_titulo)
