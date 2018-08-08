@@ -234,6 +234,7 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
         try {
             interpretador.analisar(codigoFonte);
             interpretador.executar();
+            btEncerrar.setEnabled(true);
         } catch (Exception erro) {
             tratarErro(erro);
         }
