@@ -50,7 +50,7 @@ import br.com.vinyanalista.portugol.android.util.S;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, CompartilharDialog.Listener, ConsoleFragment.Listener, Editor.Listener, LocalizarSubstituirDialog.Listener, SalvarDescartarDialog.Listener {
     private static final String ARQUIVO_SEM_NOME = "Sem nome";
-    private static final String NOME_DE_ARQUIVO_PADRAO = "algoritmo.por";
+    private static final String NOME_DE_ARQUIVO_PADRAO = "algoritmo" + BuildConfig.EXTENSAO_DE_ARQUIVO;
     private static final int SEM_ERRO = -1;
 
     static final int REQUEST_ABRIR_ARQUIVO = 1;
@@ -139,6 +139,22 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             int linha = savedInstanceState.getInt(ESTADO_EDITOR_LINHA);
             int coluna = savedInstanceState.getInt(ESTADO_EDITOR_COLUNA);
             S.l(this, "linha: " + linha + ", coluna: " + coluna);
+        }
+
+        // TODO Melhorar: associação do aplicativo com a extensão de arquivo
+        // https://developer.android.com/training/basics/intents/filters
+        // https://developer.android.com/training/sharing/receive
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+
+        if (Intent.ACTION_VIEW.equals(action)) {
+            S.l(this, "Recebendo a ação ACTION_VIEW, tipo do arquivo: " + type);
+            Uri caminhoDoArquivo = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            if (caminhoDoArquivo != null) {
+                S.l(this, "Caminho do arquivo: " + caminhoDoArquivo);
+                abrirArquivo(caminhoDoArquivo);
+            }
         }
     }
 
@@ -373,7 +389,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             // https://developer.android.com/guide/topics/providers/document-provider
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.setType("text/plain");
+            // https://stackoverflow.com/q/39558325/1657502
+            intent.setType("*/*");
             startActivityForResult(intent, REQUEST_ABRIR_ARQUIVO);
         } else {
             solicitarPermissaoParaEscreverArquivos(REQUEST_ABRIR_ARQUIVO);

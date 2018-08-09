@@ -21,6 +21,76 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- TODO Melhorar: associação do aplicativo com a extensão de arquivo -->
+            <!-- https://stackoverflow.com/a/3465451/1657502 -->
+            <!-- https://stackoverflow.com/a/31028507/1657502 -->
+            <intent-filter
+                android:icon="@mipmap/ic_launcher"
+                android:label="@string/app_name"
+                android:priority="50" >
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+
+            <intent-filter
+                android:icon="@mipmap/ic_launcher"
+                android:label="@string/app_name"
+                android:priority="50" >
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="file" />
+                <data android:host="*" />
+
+                <!--
+                     Work around Android's ugly primitive PatternMatcher
+                     implementation that can't cope with finding a . early in
+                     the path unless it's explicitly matched.
+                -->
+                <data android:pathPattern=".*\\${extensaoDeArquivo}" />
+                <data android:pathPattern=".*\\..*\\${extensaoDeArquivo}" />
+                <data android:pathPattern=".*\\..*\\..*\\${extensaoDeArquivo}" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\${extensaoDeArquivo}" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\${extensaoDeArquivo}" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\${extensaoDeArquivo}" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\${extensaoDeArquivo}" />
+            </intent-filter>
+
+            <!--<intent-filter
+                android:icon="@mipmap/ic_launcher"
+                android:label="@string/app_name"
+                android:priority="50" >
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:mimeType="*/*" />-->
+
+                <!--
+                     Work around Android's ugly primitive PatternMatcher
+                     implementation that can't cope with finding a . early in
+                     the path unless it's explicitly matched.
+                -->
+                <!--<data android:pathPattern=".*\\${extensaoDeArquivo}" />
+                <data android:pathPattern=".*\\..*\\${extensaoDeArquivo}" />
+                <data android:pathPattern=".*\\..*\\..*\\${extensaoDeArquivo}" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\${extensaoDeArquivo}" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\${extensaoDeArquivo}" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\${extensaoDeArquivo}" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\${extensaoDeArquivo}" />
+            </intent-filter>-->
         </activity>
 
         <activity
