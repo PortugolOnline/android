@@ -9,7 +9,7 @@ editor.setTheme('ace/theme/textmate');
 editor.getSession().setMode('ace/mode/portugol');
 editor.setOptions({
     enableBasicAutocompletion: true,
-    //enableSnippets: true,
+    enableSnippets: true,
     enableLiveAutocompletion: true
 });
 
