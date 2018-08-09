@@ -40,7 +40,6 @@ import java.io.InputStreamReader;
 import br.com.vinyanalista.portugol.android.BuildConfig;
 import br.com.vinyanalista.portugol.android.editor.ConfiguracoesDaPesquisa;
 import br.com.vinyanalista.portugol.android.editor.Editor;
-import br.com.vinyanalista.portugol.android.editor.EditorListener;
 import br.com.vinyanalista.portugol.android.R;
 import br.com.vinyanalista.portugol.android.adapter.TabsAdapter;
 import br.com.vinyanalista.portugol.android.dialog.CompartilharDialog;
@@ -48,7 +47,7 @@ import br.com.vinyanalista.portugol.android.dialog.LocalizarSubstituirDialog;
 import br.com.vinyanalista.portugol.android.dialog.SalvarDescartarDialog;
 import br.com.vinyanalista.portugol.android.util.S;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, CompartilharDialog.Listener, EditorListener, LocalizarSubstituirDialog.Listener, SalvarDescartarDialog.Listener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, CompartilharDialog.Listener, Editor.Listener, LocalizarSubstituirDialog.Listener, SalvarDescartarDialog.Listener {
     private static final String ARQUIVO_SEM_NOME = "Sem nome";
     private static final String NOME_DE_ARQUIVO_PADRAO = "algoritmo.por";
     static final int REQUEST_ABRIR_ARQUIVO = 1;

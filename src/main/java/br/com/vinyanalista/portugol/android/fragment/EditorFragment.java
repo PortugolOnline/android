@@ -7,14 +7,13 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 
 import br.com.vinyanalista.portugol.android.editor.Editor;
-import br.com.vinyanalista.portugol.android.editor.EditorListener;
 import br.com.vinyanalista.portugol.android.R;
 
 public class EditorFragment extends BaseFragment {
     private Editor editor;
-    private EditorListener listener;
+    private Editor.Listener listener;
 
-    public static EditorFragment newInstance(EditorListener listener) {
+    public static EditorFragment newInstance(Editor.Listener listener) {
         EditorFragment fragment = new EditorFragment();
         fragment.listener = listener;
         return fragment;
@@ -29,8 +28,7 @@ public class EditorFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_editor, container, false);
-        WebView webView = (WebView) view;
-        editor = new Editor(webView);
+        editor = (Editor) view;
         editor.adicionarListener(listener);
         return view;
     }

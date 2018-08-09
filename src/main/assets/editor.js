@@ -78,14 +78,39 @@ function aumentarFonte() {
     editor.setFontSize(tamanhoDaFonte);
 }
 
-function desfazer() {
-    editor.undo();
+function colar(texto) {
+    editor.insert(texto);
+}
+
+function compartilharTextoSelecionado() {
+    var textoSelecionado = editor.getSelectedText();
+    if (window.javascriptInterface) {
+        window.javascriptInterface.compartilharTextoSelecionado(textoSelecionado);
+    } else {
+        console.log("compartilharTextoSelecionado(texto: " + textoSelecionado + ")");
+    }
+}
+
+function copiar() {
+    var textoSelecionado = editor.getSelectedText();
+    if (textoSelecionado) {
+        if (window.javascriptInterface) {
+            window.javascriptInterface.copiar(textoSelecionado);
+        } else {
+            console.log("copiar(texto: " + textoSelecionado + ")");
+        }
+        return textoSelecionado;
+    }
 }
 
 function configurarPesquisa(localizar, diferenciarMaiusculas, substituirPor) {
     configuracoesDaPesquisa.localizar = localizar;
     configuracoesDaPesquisa.diferenciarMaiusculas = diferenciarMaiusculas;
     configuracoesDaPesquisa.substituirPor = substituirPor;
+}
+
+function desfazer() {
+    editor.undo();
 }
 
 function destacarLinhaComErro(linha, coluna) {
@@ -119,8 +144,20 @@ function posicionarCursor(linha, coluna) {
     editor.gotoLine(linha - 1, coluna - 1, true);
 }
 
+function recortar() {
+    var textoSelecionado = copiar();
+    if (textoSelecionado) {
+        colar("");
+        return textoSelecionado;
+    }
+}
+
 function refazer() {
     editor.redo();
+}
+
+function selecionarTudo() {
+    editor.selectAll();
 }
 
 function setCodigoFonte(codigoFonte) {

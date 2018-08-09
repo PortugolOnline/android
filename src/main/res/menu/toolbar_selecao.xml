@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_selecao_recortar"
+        android:icon="@drawable/ic_content_cut_white_48dp"
+        android:title="@string/action_selecao_recortar"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_selecao_copiar"
+        android:icon="@drawable/ic_content_copy_white_48dp"
+        android:title="@string/action_selecao_copiar"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_selecao_colar"
+        android:icon="@drawable/ic_content_paste_white_48dp"
+        android:title="@string/action_selecao_colar"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_selecao_selecionar_tudo"
+        android:icon="@drawable/ic_select_all_white_48dp"
+        android:title="@string/action_selecao_selecionar_tudo"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_selecao_compartilhar"
+        android:icon="@drawable/ic_share_white_48dp"
+        android:title="@string/action_selecao_compartilhar"
+        app:showAsAction="always" />
+</menu>
