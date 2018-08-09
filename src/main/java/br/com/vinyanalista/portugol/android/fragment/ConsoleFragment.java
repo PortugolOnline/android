@@ -1,16 +1,15 @@
 package br.com.vinyanalista.portugol.android.fragment;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.SpannableString;
-import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
@@ -21,6 +20,7 @@ import java.io.IOException;
 import br.com.vinyanalista.portugol.android.BuildConfig;
 import br.com.vinyanalista.portugol.android.R;
 import br.com.vinyanalista.portugol.android.activity.MainActivity;
+import br.com.vinyanalista.portugol.android.util.S;
 import br.com.vinyanalista.portugol.base.lexer.LexerException;
 import br.com.vinyanalista.portugol.base.parser.ParserException;
 import br.com.vinyanalista.portugol.interpretador.Interpretador;
@@ -31,7 +31,10 @@ import br.com.vinyanalista.portugol.interpretador.execucao.EscutaDeExecutor;
 
 public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
     static final String CODIGO_FONTE = "CODIGO_FONTE";
-    static final String TAG = "TESTE";
+
+    public interface Listener {
+        void destacarLinhaComErro(int linha, int coluna);
+    }
 
     private MainActivity mainActivity;
 
@@ -68,25 +71,6 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
         btEntrar = (Button) view.findViewById(R.id.entrar);
         btEncerrar = (Button) view.findViewById(R.id.encerrar);
 
-        // Rola a TextView para baixo sempre que texto é adicionado
-        // https://stackoverflow.com/a/19860791/1657502
-        tvSaida.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                svSaida.fullScroll(ScrollView.FOCUS_DOWN);
-            }
-        });
-
         btEntrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,33 +96,35 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
 
     @Override
     public void aoEncerrarExecucao(ErroEmTempoDeExecucao erroEmTempoDeExecucao) {
-        // TODO Esse método é realmente necessário?
-        /*if (erroEmTempoDeExecucao != null) {
+        // TODO Refatorar tratamento de exceção
+        if (erroEmTempoDeExecucao != null) {
             tratarErro(erroEmTempoDeExecucao);
-        }*/
+        }
     }
 
     class TerminalAndroid extends Terminal {
         @Override
         public void erro(final String mensagemDeErro) {
-            Log.d(TAG, "erro(" + mensagemDeErro + ")");
+            S.l(this, "erro() - mensagemDeErro: " + mensagemDeErro);
             if (BuildConfig.DEBUG && isEncerrado()) {
                 throw new AssertionError("Chamada a erro() com o terminal já encerrado");
             }
+            // TODO Refatorar tratamento de exceção
             /*if (isEncerrado()) {
                 return;
             }*/
-            mainActivity.runOnUiThread(new Runnable() {
+            /*mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     adicionarASaida(mensagemDeErro, Color.RED);
                 }
-            });
+            });*/
+            //tratarErro();
         }
 
         @Override
         public synchronized void encerrar() {
-            Log.d(TAG, "encerrar()");
+            S.l(this, "encerrar()");
             if (BuildConfig.DEBUG && isEncerrado()) {
                 throw new AssertionError("Chamada a encerrar() com o terminal já encerrado");
             }
@@ -147,9 +133,9 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
             mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    edEntrada.setEnabled(false);
                     btEntrar.setEnabled(false);
                     btEncerrar.setEnabled(false);
-                    edEntrada.setEnabled(false);
                 }
             });
 
@@ -157,13 +143,13 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
         }
 
         private synchronized void entrar() {
-            Log.d(TAG, "entrar()");
+            S.l(this, "entrar()");
             notify();
         }
 
         @Override
         protected void escrever(final String mensagem) {
-            Log.d(TAG, "escrever(" + mensagem + ")");
+            S.l(this, "escrever() - mensagem: " + mensagem);
             mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -174,7 +160,7 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
 
         @Override
         public void informacao(final String mensagemDeInformacao) {
-            Log.d(TAG, "informacao(" + mensagemDeInformacao + ")");
+            S.l(this, "informacao() - mensagemDeInformacao: " + mensagemDeInformacao);
             mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -185,13 +171,18 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
 
         @Override
         protected String ler() {
-            Log.d(TAG, "ler()");
+            S.l(this, "ler()");
             mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    btEntrar.setEnabled(true);
                     edEntrada.setEnabled(true);
+                    btEntrar.setEnabled(true);
+
+                    // Foca no campo Entrada e mostra o teclado
+                    // https://stackoverflow.com/a/5106399/1657502
                     edEntrada.requestFocus();
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.showSoftInput(edEntrada, InputMethodManager.SHOW_IMPLICIT);
                 }
             });
             try {
@@ -217,7 +208,8 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
 
         @Override
         public void limpar() {
-            Log.d(TAG, "limpar()");
+            S.l(this, "limpar()");
+            tvSaida.setText(R.string.vazia);
         }
     }
 
@@ -225,9 +217,13 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
         SpannableString textoComEstilo = new SpannableString(texto + "\n");
         textoComEstilo.setSpan(new ForegroundColorSpan(cor), 0, textoComEstilo.length(), 0);
         tvSaida.append(textoComEstilo);
+        // Rola a TextView para baixo sempre que texto é adicionado
+        // https://stackoverflow.com/a/28403308/1657502
+        svSaida.fullScroll(View.FOCUS_DOWN);
     }
 
     public void executar(String codigoFonte) {
+        tvSaida.setText(R.string.vazia);
         terminal = new TerminalAndroid();
         interpretador = new Interpretador(terminal);
         interpretador.adicionarEscutaDeExecutor(this);
@@ -236,15 +232,17 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
             interpretador.executar();
             btEncerrar.setEnabled(true);
         } catch (Exception erro) {
+            // TODO Refatorar tratamento de exceção
             tratarErro(erro);
         }
     }
 
     private void tratarErro(Exception erro) {
-        Log.d(TAG, "tratarErro()");
+        // TODO Refatorar tratamento de exceção
+        S.l(this, "tratarErro(erro)");
         int linha = -1;
         int coluna = -1;
-        StringBuilder mensagemDeErro = new StringBuilder("Erro");
+        final StringBuilder mensagemDeErro = new StringBuilder("Erro");
         if (erro instanceof LexerException) {
             LexerException erroLexico = (LexerException) erro;
             linha = erroLexico.getToken().getLine();
@@ -270,9 +268,22 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
         }
         if ((linha != -1) && (coluna != -1)) {
             mensagemDeErro.append(" na linha ").append(linha).append(" coluna ").append(coluna);
+            final int linhaFinal = linha, colunaFinal = coluna;
+            mainActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mainActivity.destacarLinhaComErro(linhaFinal, colunaFinal);
+                }
+            });
         }
         mensagemDeErro.append("\n").append(erro.getLocalizedMessage());
-        terminal.erro(mensagemDeErro.toString());
+        //terminal.erro(mensagemDeErro.toString());
+        mainActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adicionarASaida(mensagemDeErro.toString(), Color.RED);
+            }
+        });
         if (!terminal.isEncerrado()) {
             terminal.encerrar();
         }

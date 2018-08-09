@@ -227,6 +227,7 @@ public class Editor extends WebView {
     }
 
     public void destacarLinhaComErro(int linha, int coluna) {
+        S.l(this, "destacarLinhaComErro() - linha: " + linha + ", coluna: " + coluna);
         evaluateJavascript("destacarLinhaComErro(" + linha + ", " + coluna + ")", null);
     }
 

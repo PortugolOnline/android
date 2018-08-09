@@ -19,29 +19,25 @@ function aoModificarCodigoFonte() {
     var codigoFonte = editor.getValue();
     var desfazerPossivel = editor.session.getUndoManager().hasUndo();
     var refazerPossivel = editor.session.getUndoManager().hasRedo();
+    console.log("aoModificarCodigoFonte() - desfazerPossivel: " + desfazerPossivel + ", refazerPossivel: " + refazerPossivel);
     if (window.javascriptInterface) {
         window.javascriptInterface.aoModificarCodigoFonte(codigoFonte, desfazerPossivel, refazerPossivel);
-    } else {
-        // Depuração usando o navegador
-        console.log("aoModificarCodigoFonte(codigoFonte, desfazerPossivel: " + desfazerPossivel + ", refazerPossivel: " + refazerPossivel + ")");
     }
 }
 
 function aoMovimentarCursor() {
     // https://stackoverflow.com/a/38182500/1657502
     var posicaoDoCursor = editor.getCursorPosition();
+    console.log("aoMovimentarCursor() - linha: " + (posicaoDoCursor.row + 1) + ", coluna: " + (posicaoDoCursor.column + 1));
     if (window.javascriptInterface) {
         window.javascriptInterface.aoMovimentarCursor(posicaoDoCursor.row + 1, posicaoDoCursor.column + 1);
-    } else {
-        console.log("aoMovimentarCursor(linha: " + (posicaoDoCursor.row + 1) + ", coluna: " + (posicaoDoCursor.column + 1) + ")");
     }
 }
 
 function aoNaoEncontrar() {
+    console.log("aoNaoEncontrar() - localizar: " + configuracoesDaPesquisa.localizar);
     if (window.javascriptInterface) {
         window.javascriptInterface.aoNaoEncontrar(configuracoesDaPesquisa.localizar);
-    } else {
-        console.log("aoNaoEncontrar(localizar: " + configuracoesDaPesquisa.localizar + ")");
     }
 }
 
@@ -63,6 +59,7 @@ function localizar(proximo) {
 }
 
 function removerDestaqueLinhaComErro() {
+    console.log("removerDestaqueLinhaComErro()");
     document.getElementsByClassName('ace_active-line')[0].classList.remove('linha_com_erro');
     editor.selection.removeListener('changeCursor', removerDestaqueLinhaComErro);
     editor.selection.on('changeCursor', aoMovimentarCursor);
@@ -84,20 +81,18 @@ function colar(texto) {
 
 function compartilharTextoSelecionado() {
     var textoSelecionado = editor.getSelectedText();
+    console.log("compartilharTextoSelecionado() - texto: " + textoSelecionado);
     if (window.javascriptInterface) {
         window.javascriptInterface.compartilharTextoSelecionado(textoSelecionado);
-    } else {
-        console.log("compartilharTextoSelecionado(texto: " + textoSelecionado + ")");
     }
 }
 
 function copiar() {
     var textoSelecionado = editor.getSelectedText();
     if (textoSelecionado) {
+        console.log("copiar() - texto: " + textoSelecionado);
         if (window.javascriptInterface) {
             window.javascriptInterface.copiar(textoSelecionado);
-        } else {
-            console.log("copiar(texto: " + textoSelecionado + ")");
         }
         return textoSelecionado;
     }
@@ -114,9 +109,11 @@ function desfazer() {
 }
 
 function destacarLinhaComErro(linha, coluna) {
+    console.log("destacarLinhaComErro() - linha: " + linha + ", coluna: " + coluna);
     editor.selection.removeListener('changeCursor', aoMovimentarCursor);
-    posicionarCursor(linha + 1, coluna + 1);
+    posicionarCursor(linha, coluna);
     intervaloDestacarLinhaComErro = setInterval(function() {
+        console.log("intervaloDestacarLinhaComErro");
         document.getElementsByClassName('ace_active-line')[0].classList.add('linha_com_erro');
         editor.selection.on('changeCursor', removerDestaqueLinhaComErro);
         clearInterval(intervaloDestacarLinhaComErro);
@@ -141,7 +138,7 @@ function localizarProximo() {
 }
 
 function posicionarCursor(linha, coluna) {
-    editor.gotoLine(linha - 1, coluna - 1, true);
+    editor.gotoLine(linha, coluna - 1, true);
 }
 
 function recortar() {

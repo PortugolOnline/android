@@ -45,9 +45,10 @@ import br.com.vinyanalista.portugol.android.adapter.TabsAdapter;
 import br.com.vinyanalista.portugol.android.dialog.CompartilharDialog;
 import br.com.vinyanalista.portugol.android.dialog.LocalizarSubstituirDialog;
 import br.com.vinyanalista.portugol.android.dialog.SalvarDescartarDialog;
+import br.com.vinyanalista.portugol.android.fragment.ConsoleFragment;
 import br.com.vinyanalista.portugol.android.util.S;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, CompartilharDialog.Listener, Editor.Listener, LocalizarSubstituirDialog.Listener, SalvarDescartarDialog.Listener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, CompartilharDialog.Listener, ConsoleFragment.Listener, Editor.Listener, LocalizarSubstituirDialog.Listener, SalvarDescartarDialog.Listener {
     private static final String ARQUIVO_SEM_NOME = "Sem nome";
     private static final String NOME_DE_ARQUIVO_PADRAO = "algoritmo.por";
     static final int REQUEST_ABRIR_ARQUIVO = 1;
@@ -534,6 +535,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void desfazer() {
         S.l(this, "desfazer()");
         getEditor().desfazer();
+    }
+
+    @Override
+    public void destacarLinhaComErro(int linha, int coluna) {
+        S.l(this, "destacarLinhaComErro() - linha: " + linha + ", coluna: " + coluna);
+        getEditor().destacarLinhaComErro(linha, coluna);
     }
 
     private void diminuirFonte() {
