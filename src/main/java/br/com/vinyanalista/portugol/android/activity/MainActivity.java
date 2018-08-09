@@ -51,6 +51,8 @@ import br.com.vinyanalista.portugol.android.util.S;
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, CompartilharDialog.Listener, ConsoleFragment.Listener, Editor.Listener, LocalizarSubstituirDialog.Listener, SalvarDescartarDialog.Listener {
     private static final String ARQUIVO_SEM_NOME = "Sem nome";
     private static final String NOME_DE_ARQUIVO_PADRAO = "algoritmo.por";
+    private static final int SEM_ERRO = -1;
+
     static final int REQUEST_ABRIR_ARQUIVO = 1;
     static final int REQUEST_ABRIR_EXEMPLO = 2;
     static final int REQUEST_NOVO = 3;
@@ -73,6 +75,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private boolean arquivoModificado = false;
     private Uri caminhoDoArquivo = null;
+    private int colunaDoErro = SEM_ERRO;
+    private int linhaDoErro = SEM_ERRO;
     private String nomeDoArquivo = ARQUIVO_SEM_NOME;
     private boolean substituir = false;
 
@@ -104,6 +108,23 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(tabsAdapter);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                S.l(MainActivity.this, "onPageSelected() - position: " + (position == TabsAdapter.TAB_EDITOR ? "TAB_EDITOR" : "TAB_CONSOLE"));
+                if (position == TabsAdapter.TAB_EDITOR) {
+                    destacarLinhaComErro();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -179,7 +200,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     public void onDrawerOpened() {
-        S.l(this, "onDrawerOpened()");
+        //S.l(this, "onDrawerOpened()");
         // Esconde o teclado quando aparece o menu lateral
         // https://stackoverflow.com/a/39088728/1657502
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
@@ -199,7 +220,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        S.l(this, "onNavigationItemSelected()");
+        //S.l(this, "onNavigationItemSelected()");
         if (drawerLayout != null) {
             switch (item.getItemId()) {
                 case R.id.nav_drawer_abrir_arquivo:
@@ -394,13 +415,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void abrirExemplo() {
-        S.l(this, "abrirExemplo()");
+        //S.l(this, "abrirExemplo()");
         Intent intent = new Intent(getBaseContext(), AbrirExemploActivity.class);
         startActivityForResult(intent, REQUEST_ABRIR_EXEMPLO);
     }
 
     private void abrirExemplo(String exemplo) {
-        S.l(this, "abrirExemplo(exemplo)");
+        //S.l(this, "abrirExemplo(exemplo)");
         arquivoModificado = false;
         caminhoDoArquivo = null;
         nomeDoArquivo = ARQUIVO_SEM_NOME;
@@ -410,14 +431,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void aoModificarCodigoFonte(Editor editor) {
-        boolean habilitarDesfazer = editor.isDesfazerPossivel();
+        final boolean habilitarDesfazer = editor.isDesfazerPossivel();
         // Se desfazer é possível, então o arquivo foi modificado
         arquivoModificado = habilitarDesfazer;
-        boolean habilitarRefazer = editor.isRefazerPossivel();
+        final boolean habilitarRefazer = editor.isRefazerPossivel();
         //S.l(this, "aoModificarCodigoFonte() - habilitarDesfazer: " + habilitarDesfazer + ", habilitarRefazer: " + habilitarRefazer);
 
-        menuToolbarPrincipal.findItem(R.id.action_desfazer).setEnabled(habilitarDesfazer);
-        menuToolbarPrincipal.findItem(R.id.action_refazer).setEnabled(habilitarRefazer);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                menuToolbarPrincipal.findItem(R.id.action_desfazer).setEnabled(habilitarDesfazer);
+                menuToolbarPrincipal.findItem(R.id.action_refazer).setEnabled(habilitarRefazer);
+            }
+        });
     }
 
     @Override
@@ -537,10 +563,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         getEditor().desfazer();
     }
 
+    public void destacarLinhaComErro() {
+        S.l(this, "destacarLinhaComErro() - linhaDoErro: " + linhaDoErro + ", colunaDoErro: " + colunaDoErro);
+        if ((linhaDoErro > SEM_ERRO) && (colunaDoErro > SEM_ERRO)) {
+            getEditor().destacarLinhaComErro(linhaDoErro, colunaDoErro);
+        }
+    }
+
     @Override
     public void destacarLinhaComErro(int linha, int coluna) {
         S.l(this, "destacarLinhaComErro() - linha: " + linha + ", coluna: " + coluna);
-        getEditor().destacarLinhaComErro(linha, coluna);
+        linhaDoErro = linha;
+        colunaDoErro = coluna;
     }
 
     private void diminuirFonte() {
@@ -549,6 +583,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void executar() {
+        colunaDoErro = linhaDoErro = SEM_ERRO;
         viewPager.setCurrentItem(TabsAdapter.TAB_CONSOLE);
         tabsAdapter.getConsoleFragment().executar(getCodigoFonte());
     }
@@ -721,7 +756,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void setCodigoFonte(String codigoFonte) {
-        S.l(this, "setCodigoFonte(codigoFonte)");
+        //S.l(this, "setCodigoFonte(codigoFonte)");
         getEditor().setCodigoFonte(codigoFonte);
     }
 
