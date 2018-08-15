@@ -1,8 +1,8 @@
 package br.com.vinyanalista.portugol.android.fragment;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
@@ -30,6 +30,11 @@ import br.com.vinyanalista.portugol.interpretador.execucao.ErroEmTempoDeExecucao
 import br.com.vinyanalista.portugol.interpretador.execucao.EscutaDeExecutor;
 
 public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
+    private static final int COR_ERRO = R.color.md_red_500;
+    private static final int COR_ESCREVER = android.R.color.black;
+    private static final int COR_INFORMACAO = R.color.md_blue_500;
+    private static final int COR_LER = R.color.md_green_500;
+
     static final String CODIGO_FONTE = "CODIGO_FONTE";
 
     public interface Listener {
@@ -116,7 +121,7 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
             /*mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    adicionarASaida(mensagemDeErro, Color.RED);
+                    adicionarASaida(mensagemDeErro, COR_ERRO);
                 }
             });*/
             //tratarErro();
@@ -153,7 +158,7 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
             mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    adicionarASaida(mensagem, Color.BLACK);
+                    adicionarASaida(mensagem, COR_ESCREVER);
                 }
             });
         }
@@ -164,7 +169,7 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
             mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    adicionarASaida(mensagemDeInformacao, Color.BLUE);
+                    adicionarASaida(mensagemDeInformacao, COR_INFORMACAO);
                 }
             });
         }
@@ -200,7 +205,7 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
                     btEntrar.setEnabled(false);
                     edEntrada.setEnabled(false);
                     edEntrada.setText(R.string.vazia);
-                    adicionarASaida(leitura, Color.CYAN);
+                    adicionarASaida(leitura, COR_LER);
                 }
             });
             return leitura;
@@ -215,7 +220,8 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
 
     private void adicionarASaida(String texto, int cor) {
         SpannableString textoComEstilo = new SpannableString(texto + "\n");
-        textoComEstilo.setSpan(new ForegroundColorSpan(cor), 0, textoComEstilo.length(), 0);
+        // https://stackoverflow.com/a/51852902/1657502
+        textoComEstilo.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), cor)), 0, textoComEstilo.length(), 0);
         tvSaida.append(textoComEstilo);
         // Rola a TextView para baixo sempre que texto é adicionado
         // https://stackoverflow.com/a/28403308/1657502
@@ -281,7 +287,7 @@ public class ConsoleFragment extends BaseFragment implements EscutaDeExecutor {
         mainActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                adicionarASaida(mensagemDeErro.toString(), Color.RED);
+                adicionarASaida(mensagemDeErro.toString(), COR_ERRO);
             }
         });
         if (!terminal.isEncerrado()) {

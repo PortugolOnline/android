@@ -77,7 +77,7 @@ public class LocalizarSubstituirDialog extends DialogFragment {
         cbSubstituir.setChecked(configuracoesDaPesquisa.getSubstituirPor() != null);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setView(view)
+        builder.setTitle(R.string.dialog_localizar_substituir_titulo).setView(view)
                 .setPositiveButton(R.string.dialog_localizar_substituir_button_localizar, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {

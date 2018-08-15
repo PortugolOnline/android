@@ -4,6 +4,8 @@
     https://developer.android.com/guide/topics/ui/look-and-feel/themes
     https://material.io/design/color/
     https://gist.github.com/daniellevass/b0b8cfa773488e138037 -->
+    <color name="md_red_500">#F44336</color>
+
     <color name="md_blue_300">#64B5F6</color>
     <color name="md_blue_500">#2196F3</color>
     <color name="md_blue_600">#1E88E5</color>

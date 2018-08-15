@@ -21,6 +21,7 @@
     <string name="ao_nao_encontrar">Sua pesquisa &lt;b>%1$s&lt;/b> não foi encontrada.</string>
     <string name="armazenamento_interno">Armazenamento interno</string>
     <string name="atividade_abrir_exemplo">Abrir exemplo</string>
+    <string name="dialog_localizar_substituir_titulo">Localizar/substituir</string>
     <string name="dialog_localizar_substituir_button_cancelar">Cancelar</string>
     <string name="dialog_localizar_substituir_button_localizar">Localizar</string>
     <string name="dialog_localizar_substituir_checkbox_diferenciar">Diferenciar maiúsculas de minúsculas</string>
